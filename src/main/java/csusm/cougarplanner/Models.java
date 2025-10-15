@@ -1,4 +1,5 @@
 package csusm.cougarplanner;
 
-public class Models {
+public class Models
+{
 }
