@@ -5,12 +5,17 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ProfileStorage
 {
 
     private static final String APP_DIR_NAME = ".cougar-planner";
     private static final String PROFILE_FILE_NAME = ".profile";
+    private static final String COURSES_FILE_NAME = ".courses";
+    private static final String ASSIGNMENTS_FILE_NAME = ".assignments";
+    private static final String ANNOUNCEMENTS_FILE_NAME = ".announcements";
 
     private static Path getProfilePath()
     {
@@ -19,6 +24,28 @@ public class ProfileStorage
         Path appDirPath = Paths.get(userHome, APP_DIR_NAME);
         return appDirPath.resolve(PROFILE_FILE_NAME);
     }
+
+    private static Path getCoursesPath()
+    {
+        String userHome = System.getProperty("user.home");
+        Path appDirPath = Paths.get(userHome, APP_DIR_NAME);
+        return appDirPath.resolve(COURSES_FILE_NAME);
+    }
+
+    private static Path getAssignmentsPath()
+    {
+        String userHome = System.getProperty("user.home");
+        Path appDirPath = Paths.get(userHome, APP_DIR_NAME);
+        return appDirPath.resolve(ASSIGNMENTS_FILE_NAME);
+    }
+
+    private static Path getAnnouncementsPath()
+    {
+        String userHome = System.getProperty("user.home");
+        Path appDirPath = Paths.get(userHome, APP_DIR_NAME);
+        return appDirPath.resolve(ANNOUNCEMENTS_FILE_NAME);
+    }
+
 
     // Checks that the ~/.cougar-planner/ directory exists
     private static void ensureAppDirectoryExists() throws IOException
@@ -120,6 +147,78 @@ public class ProfileStorage
         System.out.println("Profile storage path: " + profilePath);
         System.out.println("Profile file exists: " + Files.exists(profilePath));
         System.out.println("App directory exists: " + Files.exists(profilePath.getParent()));
+    }
+
+    // Saves course map data to CSV file
+    public static void saveCourses(Map<String, String> courses)
+    {
+        try
+        {
+            ensureAppDirectoryExists();
+            Path coursesPath = getCoursesPath();
+
+            try (BufferedWriter writer = Files.newBufferedWriter(coursesPath))
+            {
+                for (Map.Entry<String, String> entry : courses.entrySet())
+                {
+                    String courseName = entry.getKey();
+                    String courseId = entry.getValue();
+                    String csvLine = String.join(",", courseName, courseId);
+                    writer.write(csvLine);
+                    writer.newLine();
+                }
+            }
+
+            System.out.println("Courses saved successfully: " + courses.size() + " courses");
+
+        }
+        catch (IOException e)
+        {
+            System.err.println("Error saving courses: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    // Reads the .courses file & reconstructs course map
+    public static Map<String, String> loadCourses()
+    {
+        Path coursesPath = getCoursesPath();
+        Map<String, String> courses = new HashMap<>();
+
+        if (!Files.exists(coursesPath))
+        {
+            System.out.println("No courses file found. Returning empty map.");
+            return courses;
+        }
+
+        try (BufferedReader reader = Files.newBufferedReader(coursesPath))
+        {
+            String line;
+            while ((line = reader.readLine()) != null)
+            {
+                if (!line.trim().isEmpty())
+                {
+                    String[] values = line.split(",", -1);
+                    if (values.length >= 2)
+                    {
+                        String courseName = values[0];
+                        String courseId = values[1];
+                        courses.put(courseName, courseId);
+                    }
+                    else
+                    {
+                        System.err.println("Skipping invalid course line: " + line);
+                    }
+                }
+            }
+        } catch (IOException e)
+        {
+            System.err.println("Error loading courses: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        System.out.println("Courses loaded successfully: " + courses.size() + " courses");
+        return courses;
     }
 
 }
