@@ -10,6 +10,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 
 import java.net.URL;
@@ -32,14 +33,16 @@ public class OrientationController implements Initializable {
     private ProfileConfig profileConfig;
 
     @FXML
-    private void onValidateClicked() {
+    private void onValidateClicked(MouseEvent event) {
         String token = tokenField.getText().trim();
         if (token.isEmpty()) {
-            statusLabel.setText("Token cannot be empty.");
+            statusLabel.setStyle("-fx-text-fill: #000000;");
+            statusLabel.setText("|    Token cannot be empty.");
             return;
         }
 
-        statusLabel.setText("Validating token.");
+        statusLabel.setStyle("-fx-text-fill: #000000;");
+        statusLabel.setText("|    Validating token.");
         validateButton.setDisable(true);
 
         // Run token validation at the same time to avoid blocking the UI
@@ -49,7 +52,8 @@ public class OrientationController implements Initializable {
             javafx.application.Platform.runLater(() -> {
                 validateButton.setDisable(false);
                 if (isValid) {
-                    statusLabel.setText("Token valid! Loading main view.");
+                    statusLabel.setStyle("-fx-text-fill: #02D541;");
+                    statusLabel.setText("|    Token valid! Loading main view.");
 
                     // Update ProfileConfig
                     profileConfig.setToken(token);
@@ -65,11 +69,13 @@ public class OrientationController implements Initializable {
                         stage.setTitle("Cougar Planner - Weekly View");
                         stage.show();
                     } catch (Exception e) {
-                        statusLabel.setText("Error loading main view.");
+                        statusLabel.setStyle("-fx-text-fill: #ff3030;");
+                        statusLabel.setText("|    Error loading main view.");
                         e.printStackTrace();
                     }
 
                 } else {
+                    statusLabel.setStyle("-fx-text-fill: #ff3030;");
                     statusLabel.setText("Invalid token. Please try again.");
                 }
             });
