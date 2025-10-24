@@ -1,6 +1,6 @@
 package csusm.cougarplanner;
 
-import csusm.cougarplanner.API;
+//import csusm.cougarplanner.API;
 import csusm.cougarplanner.Launcher;
 import csusm.cougarplanner.ProfileConfig;
 import javafx.collections.FXCollections;
@@ -30,6 +30,57 @@ public class OrientationController implements Initializable {
     @FXML
     private CheckBox rememberTokenCheckBox;
 
+    @FXML
+    private CheckBox sundayCheckBox;
+
+    @FXML
+    private CheckBox mondayCheckBox;
+
+        //cosmetic FXML interactives
+
+
+        //if sundayCheckBox is selected, sunday status = true
+        private static boolean sundayStatus = true; //you only need to know the selected status of sunday because the status of monday is implied
+
+        //will flip the selected status of both the sunday and monday check boxes
+        private void flip (boolean entry) {
+            sundayStatus = !entry;
+            sundayCheckBox.setSelected(sundayStatus);
+            mondayCheckBox.setSelected(!sundayStatus);
+        }
+
+        @FXML
+        private void weekBeginManager(MouseEvent event) {
+            flip(sundayStatus);
+        }
+
+        @FXML
+        private ScrollPane scrollPaneField; //field that controls the scroll feature; Vvalue will be changed
+
+        @FXML
+        private Label introductionLabel; //introduction label button on the left column of the screen
+
+        @FXML
+        private Label orientationLabel; //orientation label button on the left column of the screen
+
+        @FXML
+        private Label APITokenLabel; //API token label button on the left column of the screen
+
+        @FXML
+        private void introductionShortcut(MouseEvent event) {
+            scrollPaneField.setVvalue(0.26);
+        }
+
+        @FXML
+        private void orientationShortcut(MouseEvent event) {
+            scrollPaneField.setVvalue(0.65);
+        }
+
+        @FXML
+        private void APITokenShortcut(MouseEvent event) {
+            scrollPaneField.setVvalue(0.93);
+        }
+
     private ProfileConfig profileConfig;
 
     @FXML
@@ -55,9 +106,12 @@ public class OrientationController implements Initializable {
                     statusLabel.setStyle("-fx-text-fill: #02D541;");
                     statusLabel.setText("|    Token valid! Loading main view.");
 
+                    //if (weekBeginningClass.getMondayCheckBox.isSelected()) {weekBegin = false;}
+
                     // Update ProfileConfig
                     profileConfig.setToken(token);
                     profileConfig.setOrientationCompleted(true);
+                    profileConfig.setWeekStartingDay(sundayStatus ? "SUNDAY" : "MONDAY");
                     Launcher.updateProfileConfig(profileConfig);
 
                     // Switch to MainPage.fxml
@@ -98,6 +152,6 @@ public class OrientationController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         profileConfig = Launcher.getProfileConfig(); // Load current user profile
         statusLabel.setText("Please enter your Canvas API token.");
-        rememberTokenCheckBox.setSelected(!profileConfig.getToken().isEmpty());
+        //rememberTokenCheckBox.setSelected(!profileConfig.getToken().isEmpty());
     }
 }
