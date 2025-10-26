@@ -1,9 +1,6 @@
 package csusm.cougarplanner;
 
 //import csusm.cougarplanner.API;
-import csusm.cougarplanner.Launcher;
-import csusm.cougarplanner.ProfileConfig;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -81,7 +78,7 @@ public class OrientationController implements Initializable {
             scrollPaneField.setVvalue(0.93);
         }
 
-    private ProfileConfig profileConfig;
+    private Profile profileConfig;
 
     @FXML
     private void onValidateClicked(MouseEvent event) {

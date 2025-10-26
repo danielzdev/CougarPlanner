@@ -1,5 +1,9 @@
 package csusm.cougarplanner;
 
+import csusm.cougarplanner.config.Profile;
+import csusm.cougarplanner.config.ProfileReader;
+import csusm.cougarplanner.config.ProfileWriter;
+import javafx.application.Application;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -8,7 +12,7 @@ import javafx.stage.Stage;
 public class Launcher extends Application {
 
     private static Stage primaryStage;
-    private static ProfileConfig profileConfig;
+    private static Profile profileConfig;
     private static ProfileStorage Storage = new ProfileStorage(); // Where we would load and save the data
 
     @Override
@@ -16,7 +20,7 @@ public class Launcher extends Application {
         primaryStage = stage;
 
         // Load profile
-        ProfileConfig profileConfig = Storage.loadProfile();
+        Profile profileConfig = Storage.loadProfile();
 
         // Decide which scene to load based on whether orientation is complete
         if (profileConfig.isOrientationCompleted() && !profileConfig.getToken().isEmpty()) {
@@ -35,11 +39,11 @@ public class Launcher extends Application {
         primaryStage.show();
     }
 
-    public static ProfileConfig getProfileConfig() {
+    public static Profile getProfileConfig() {
         return profileConfig;
     }
 
-    public static void updateProfileConfig(ProfileConfig newConfig) {
+    public static void updateProfileConfig(Profile newConfig) {
         profileConfig = newConfig;
         Storage.saveProfile(newConfig);
     }

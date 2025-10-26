@@ -2,32 +2,43 @@ package csusm.cougarplanner;
 
 public class Course
 {
-    private String courseName;
-    private String id;
+    private String course_id;
+    private String course_name;
 
-    public Course(String courseName, String id)
+    public Course() {}
+
+    public Course(String course_id, String course_name)
     {
-        this.courseName = courseName;
-        this.id = id;
+        this.course_id = course_id;
+        this.course_name = course_name;
+    }
+
+    public String getCourseId()
+    {
+        return course_id;
+    }
+
+    public void setCourseId(String course_id)
+    {
+        this.course_id = course_id;
     }
 
     public String getCourseName()
     {
-        return courseName;
+        return course_name;
     }
 
-    public void setCourseName(String courseName)
+    public void setCourseName(String course_name)
     {
-        this.courseName = courseName;
+        this.course_name = course_name;
     }
 
-    public String getId()
+    @Override
+    public String toString()
     {
-        return id;
-    }
-
-    public void setId(String id)
-    {
-        this.id = id;
+        return "Course{" +
+                "course_id='" + course_id + '\'' +
+                ", course_name='" + course_name + '\'' +
+                '}';
     }
 }

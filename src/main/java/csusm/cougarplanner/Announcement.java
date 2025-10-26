@@ -1,60 +1,84 @@
 package csusm.cougarplanner;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-
 public class Announcement
 {
-    private LocalDate date;
-    private LocalTime time;
-    private String course;
-    private String assignmentName;
+    private String announcement_id;
+    private String course_id;
+    private String title;
+    private String posted_at;
+    private String body;
 
-    public Announcement(LocalDate date, LocalTime time, String course, String assignmentName)
+    public Announcement() {}
+
+    public Announcement(String announcement_id, String course_id, String title,
+                        String posted_at, String body)
     {
-        this.date = date;
-        this.time = time;
-        this.course = course;
-        this.assignmentName = assignmentName;
+        this.announcement_id = announcement_id;
+        this.course_id = course_id;
+        this.title = title;
+        this.posted_at = posted_at;
+        this.body = body;
     }
 
-    public LocalDate getDate()
+    public String getAnnouncementId()
     {
-        return date;
+        return announcement_id;
     }
 
-    public void setDate(LocalDate date)
+    public void setAnnouncementId(String announcement_id)
     {
-        this.date = date;
+        this.announcement_id = announcement_id;
     }
 
-    public LocalTime getTime()
+    public String getCourseId()
     {
-        return time;
+        return course_id;
     }
 
-    public void setTime(LocalTime time)
+    public void setCourseId(String course_id)
     {
-        this.time = time;
+        this.course_id = course_id;
     }
 
-    public String getCourse()
+    public String getTitle()
     {
-        return course;
+        return title;
     }
 
-    public void setCourse(String course)
+    public void setTitle(String title)
     {
-        this.course = course;
+        this.title = title;
     }
 
-    public String getAssignmentName()
+    public String getPostedAt()
     {
-        return assignmentName;
+        return posted_at;
     }
 
-    public void setAssignmentName(String assignmentName)
+    public void setPostedAt(String posted_at)
     {
-        this.assignmentName = assignmentName;
+        this.posted_at = posted_at;
+    }
+
+    public String getBody()
+    {
+        return body;
+    }
+
+    public void setBody(String body)
+    {
+        this.body = body;
+    }
+
+    @Override
+    public String toString()
+    {
+        return "Announcement{" +
+                "announcement_id='" + announcement_id + '\'' +
+                ", course_id='" + course_id + '\'' +
+                ", title='" + title + '\'' +
+                ", posted_at='" + posted_at + '\'' +
+                ", body='" + body + '\'' +
+                '}';
     }
 }
