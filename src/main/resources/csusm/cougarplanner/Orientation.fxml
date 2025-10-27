@@ -34,7 +34,7 @@
                               <Font name="Arial Rounded MT Bold" size="15.0" />
                            </font>
                         </Label>
-                        <Pane onMouseClicked="#introductionShortcut" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <Pane userData = "0" onMouseClicked="#scrollShortcut" onMouseEntered="#shortcutTextHighlight" onMouseExited="#shortcutTextHighlight" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                      </children>
                      <cursor>
                         <Cursor fx:constant="HAND" />
@@ -49,7 +49,7 @@
                               <Font name="Arial Rounded MT Bold" size="15.0" />
                            </font>
                         </Label>
-                        <Pane onMouseClicked="#orientationShortcut" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <Pane userData = "1" onMouseEntered = "#shortcutTextHighlight" onMouseExited = "#shortcutTextHighlight" onMouseClicked="#scrollShortcut" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                      </children>
                      <cursor>
                         <Cursor fx:constant="HAND" />
@@ -59,12 +59,12 @@
                      <children>
                         <AnchorPane layoutX="112.0" prefHeight="32.0" prefWidth="6.0" style="-fx-background-color: #0062a5;" />
                         <AnchorPane layoutY="5.0" prefHeight="22.0" prefWidth="112.0" style="-fx-background-color: #002E5A;" />
-                        <Label layoutX="36.0" layoutY="7.0" text="API token" textFill="WHITE">
+                        <Label fx:id="APITokenLabel" layoutX="36.0" layoutY="7.0" text="API token" textFill="WHITE">
                            <font>
                               <Font name="Arial Rounded MT Bold" size="15.0" />
                            </font>
                         </Label>
-                        <Pane onMouseClicked="#APITokenShortcut" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <Pane userData = "2" onMouseEntered = "#shortcutTextHighlight" onMouseExited = "#shortcutTextHighlight" onMouseClicked="#scrollShortcut" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                      </children>
                      <cursor>
                         <Cursor fx:constant="HAND" />
@@ -126,8 +126,8 @@
                                              </font>
                                           </Label>
                                           <Pane layoutX="14.0" layoutY="59.0" prefHeight="6.0" prefWidth="310.0" style="-fx-background-color: #F8BA2B; -fx-background-radius: 10; -fx-blend-mode: multiply;" />
-                                          <TextArea editable="false" layoutX="60.0" layoutY="80.0" prefHeight="200.0" prefWidth="300.0" text="Hello user!, and welcome to the Cougar Planner!!!!&#10;&#10;This page will provide you with a quick and easy&#10;introduction and orientation to the software.&#10;&#10;Here you will learn the following about the Cougar Planner:&#10;     - What it does,&#10;     - How to use it,&#10;     - Its included features, and&#10;     - How to set it up for continuous usage" wrapText="true" />
                                           <Pane layoutX="254.0" layoutY="68.0" prefHeight="6.0" prefWidth="105.0" style="-fx-background-color: #bcbec0; -fx-background-radius: 10; -fx-blend-mode: multiply;" />
+                                          <TextArea editable="false" layoutX="60.0" layoutY="80.0" prefHeight="200.0" prefWidth="300.0" text="Hello user!, and welcome to the Cougar Planner!!!!&#10;&#10;This page will provide you with a quick and easy&#10;introduction and orientation to the software.&#10;&#10;Here you will learn the following about the Cougar Planner:&#10;     - What it does,&#10;     - How to use it,&#10;     - Its included features, and&#10;     - How to set it up for continuous usage" wrapText="true" />
                                        </children>
                                     </AnchorPane>
                                     <AnchorPane prefHeight="443.0" prefWidth="426.0">
@@ -138,20 +138,20 @@
                                              </font>
                                           </Label>
                                           <Pane layoutX="14.0" layoutY="37.0" prefHeight="6.0" prefWidth="310.0" style="-fx-background-color: #F8BA2B; -fx-background-radius: 10; -fx-blend-mode: multiply;" />
-                                          <TextArea editable="false" layoutX="60.0" layoutY="59.0" prefHeight="367.0" prefWidth="300.0" text="The Cougar Planner software is intended to act as a course organizer that will assemble and sort the announcements and assignments from all of the classes you're taking. WIth a user friendly interface and customizability, we provide a worthwile experience that will improve your time here at CSUSM.&#10;&#10;The Cougar Planner is a software built by CSUSM students for CSUSM students. We make it our goal to deliver you an easier method of managing your course obligations.&#10;Better work management will foster work efficiency, leaving you with more time to spend outside of school: spending time with family, practicing hobbies, and engaging with the world around you. Additionally, this software will help ensure that you never overextend your schedule again.&#10;We welcome and encourage all students of CSUSM to take advantage of this opportunity and all of its due benefits." wrapText="true" />
                                           <Pane layoutX="254.0" layoutY="46.0" prefHeight="6.0" prefWidth="105.0" style="-fx-background-color: #bcbec0; -fx-background-radius: 10; -fx-blend-mode: multiply;" />
+                                          <TextArea editable="false" layoutX="60.0" layoutY="59.0" prefHeight="367.0" prefWidth="300.0" text="The Cougar Planner software is intended to act as a course organizer that will assemble and sort the announcements and assignments from all of the classes you're taking. WIth a user friendly interface and customizability, we provide a worthwile experience that will improve your time here at CSUSM.&#10;&#10;The Cougar Planner is a software built by CSUSM students for CSUSM students. We make it our goal to deliver you an easier method of managing your course obligations.&#10;Better work management will foster work efficiency, leaving you with more time to spend outside of school: spending time with family, practicing hobbies, and engaging with the world around you. Additionally, this software will help ensure that you never overextend your schedule again.&#10;We welcome and encourage all students of CSUSM to take advantage of this opportunity and all of its due benefits." wrapText="true" />
                                        </children>
                                     </AnchorPane>
                                     <AnchorPane prefHeight="300.0" prefWidth="426.0">
                                        <children>
-                                          <TextArea editable="false" layoutX="60.0" layoutY="58.0" prefHeight="182.0" prefWidth="300.0" text="This information will be organized inside of week-size containers that display the itinerary for each day of the current week. And you are given the choice to start the week on Sunday or Monday.&#10;You have the ability to view the next and previous weeks with buttons on the bottom of the week view menu.&#10;*List other details*&#10;&#10;*List API token acquisition instructions*" wrapText="true" />
-                                          <Pane layoutX="14.0" layoutY="37.0" prefHeight="6.0" prefWidth="310.0" style="-fx-background-color: #F8BA2B; -fx-background-radius: 10; -fx-blend-mode: multiply;" />
                                           <Label alignment="TOP_LEFT" layoutX="53.0" layoutY="4.0" prefHeight="36.0" prefWidth="197.0" text="Orientation" textFill="#222222">
                                              <font>
                                                 <Font size="23.0" />
                                              </font>
                                           </Label>
+                                          <Pane layoutX="14.0" layoutY="37.0" prefHeight="6.0" prefWidth="310.0" style="-fx-background-color: #F8BA2B; -fx-background-radius: 10; -fx-blend-mode: multiply;" />
                                           <Pane layoutX="254.0" layoutY="46.0" prefHeight="6.0" prefWidth="105.0" style="-fx-background-color: #bcbec0; -fx-background-radius: 10; -fx-blend-mode: multiply;" />
+                                          <TextArea editable="false" layoutX="60.0" layoutY="58.0" prefHeight="182.0" prefWidth="300.0" text="This information will be organized inside of week-size containers that display the itinerary for each day of the current week. And you are given the choice to start the week on Sunday or Monday.&#10;You have the ability to view the next and previous weeks with buttons on the bottom of the week view menu.&#10;*List other details*&#10;&#10;*List API token acquisition instructions*" wrapText="true" />
                                           <CubicCurve controlX1="-41.015438079833984" controlX2="94.5592269897461" controlY1="64.34172821044922" controlY2="-82.7718734741211" endX="142.4967803955078" endY="71.33328247070312" layoutX="312.0" layoutY="159.0" rotate="93.2" startX="-64.58984375" startY="0.028017627075314522" stroke="#222222">
                                              <fill>
                                                 <RadialGradient centerX="0.3763837770342387" centerY="0.5709779300148179" focusAngle="33.37" focusDistance="-1.0" radius="1.0">
@@ -174,34 +174,34 @@
                                     </AnchorPane>
                                     <AnchorPane prefHeight="363.0" prefWidth="457.0">
                                        <children>
-                                          <Label layoutX="86.0" layoutY="159.0" text="API token" />
-                                          <Label fx:id="statusLabel" layoutX="151.0" layoutY="159.0" text="|    Error Status" textFill="#ff3030" />
-                                          <Button fx:id="validateButton" layoutX="253.0" layoutY="181.0" mnemonicParsing="false" onMousePressed="#onValidateClicked" text="Confirm" />
-                                          <CheckBox fx:id="rememberTokenCheckBox" layoutX="86.0" layoutY="224.0" mnemonicParsing="false" selected="true" text="Remember Me?" />
-                                          <TextField fx:id="tokenField" layoutX="86.0" layoutY="181.0" promptText="Enter token here" />
-                                          <CheckBox fx:id = "sundayCheckBox" layoutX="86.0" layoutY="122.0" mnemonicParsing="false" onMouseClicked="#weekBeginManager" selected="true" text="Sunday">
+                                          <Label alignment="TOP_LEFT" layoutX="53.0" layoutY="31.0" prefHeight="36.0" prefWidth="291.0" text="API token entry and settings" textFill="#222222">
                                              <font>
-                                                <Font name="Arial Rounded MT Bold" size="12.0" />
+                                                <Font size="23.0" />
                                              </font>
-                                          </CheckBox>
-                                          <CheckBox fx:id = "mondayCheckBox" layoutX="178.0" layoutY="122.0" mnemonicParsing="false" onMouseClicked="#weekBeginManager" text="Monday">
-                                             <font>
-                                                <Font name="Arial Rounded MT Bold" size="12.0" />
-                                             </font>
-                                          </CheckBox>
+                                          </Label>
+                                          <Pane layoutX="79.0" layoutY="67.0" prefHeight="6.0" prefWidth="310.0" style="-fx-background-color: #F8BA2B; -fx-background-radius: 10; -fx-blend-mode: multiply;" />
+                                          <Pane layoutX="234.0" layoutY="77.0" prefHeight="6.0" prefWidth="155.0" style="-fx-background-color: #F8BA2B; -fx-background-radius: 10; -fx-blend-mode: multiply;" />
+                                          <Pane layoutX="313.0" layoutY="87.0" prefHeight="6.0" prefWidth="76.0" style="-fx-background-color: #F8BA2B; -fx-background-radius: 10; -fx-blend-mode: multiply;" />
                                           <Label layoutX="86.0" layoutY="98.0" text="Week Beginning" underline="true">
                                              <font>
                                                 <Font name="Arial Rounded MT Bold" size="12.0" />
                                              </font>
                                           </Label>
-                                          <Pane layoutX="79.0" layoutY="67.0" prefHeight="6.0" prefWidth="310.0" style="-fx-background-color: #F8BA2B; -fx-background-radius: 10; -fx-blend-mode: multiply;" />
-                                          <Label fx:id="APITokenLabel" alignment="TOP_LEFT" layoutX="53.0" layoutY="31.0" prefHeight="36.0" prefWidth="291.0" text="API token entry and settings" textFill="#222222">
+                                          <CheckBox fx:id="sundayCheckBox" layoutX="86.0" layoutY="122.0" mnemonicParsing="false" onMouseClicked="#weekBeginManager" selected="true" text="Sunday">
                                              <font>
-                                                <Font size="23.0" />
+                                                <Font name="Arial Rounded MT Bold" size="12.0" />
                                              </font>
-                                          </Label>
-                                          <Pane layoutX="234.0" layoutY="77.0" prefHeight="6.0" prefWidth="155.0" style="-fx-background-color: #F8BA2B; -fx-background-radius: 10; -fx-blend-mode: multiply;" />
-                                          <Pane layoutX="313.0" layoutY="87.0" prefHeight="6.0" prefWidth="76.0" style="-fx-background-color: #F8BA2B; -fx-background-radius: 10; -fx-blend-mode: multiply;" />
+                                          </CheckBox>
+                                          <CheckBox fx:id="mondayCheckBox" layoutX="178.0" layoutY="122.0" mnemonicParsing="false" onMouseClicked="#weekBeginManager" text="Monday">
+                                             <font>
+                                                <Font name="Arial Rounded MT Bold" size="12.0" />
+                                             </font>
+                                          </CheckBox>
+                                          <Label layoutX="86.0" layoutY="159.0" text="API token" />
+                                          <Label fx:id="statusLabel" layoutX="151.0" layoutY="159.0" text="|    Error Status" textFill="#ff3030" />
+                                          <TextField fx:id="tokenField" layoutX="86.0" layoutY="181.0" promptText="Enter token here" />
+                                          <Button fx:id="validateButton" layoutX="253.0" layoutY="181.0" mnemonicParsing="false" onMousePressed="#onValidateClicked" text="Confirm" />
+                                          <CheckBox fx:id="rememberTokenCheckBox" layoutX="86.0" layoutY="224.0" mnemonicParsing="false" selected="true" text="Remember Me?" />
                                           <Pane layoutX="351.0" layoutY="97.0" prefHeight="6.0" prefWidth="38.0" style="-fx-background-color: #F8BA2B; -fx-background-radius: 10; -fx-blend-mode: multiply;" />
                                           <Pane layoutX="351.0" layoutY="107.0" prefHeight="6.0" prefWidth="38.0" style="-fx-background-color: #F8BA2B; -fx-background-radius: 10; -fx-blend-mode: multiply;" />
                                           <Pane layoutX="351.0" layoutY="117.0" prefHeight="6.0" prefWidth="38.0" style="-fx-background-color: #F8BA2B; -fx-background-radius: 10; -fx-blend-mode: multiply;" />

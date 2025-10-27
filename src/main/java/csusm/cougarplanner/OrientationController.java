@@ -7,13 +7,17 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 import java.net.URL;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 
 public class OrientationController implements Initializable {
@@ -43,7 +47,7 @@ public class OrientationController implements Initializable {
         private static boolean sundayStatus = true; //you only need to know the selected status of sunday because the status of monday is implied
 
         //will flip the selected status of both the sunday and monday check boxes
-        private void flip (boolean entry) {
+        private void flip(boolean entry) {
             sundayStatus = !entry;
             sundayCheckBox.setSelected(sundayStatus);
             mondayCheckBox.setSelected(!sundayStatus);
@@ -51,22 +55,49 @@ public class OrientationController implements Initializable {
 
         @FXML
         private void weekBeginManager(MouseEvent event) {
-            flip(sundayStatus);
+            flip(sundayStatus); //flips check status of both check boxes
         }
 
         @FXML
         private ScrollPane scrollPaneField; //field that controls the scroll feature; Vvalue will be changed
 
         @FXML
-        private Label introductionLabel; //introduction label button on the left column of the screen
+        private Label introductionLabel, orientationLabel, APITokenLabel;
+
+        Label[] paneHitboxToLabelIndex;
+        Double[] paneHitboxToScrollPercentageIndex = {0.26, 0.65, 0.93};
 
         @FXML
-        private Label orientationLabel; //orientation label button on the left column of the screen
+        private void shortcutTextHighlight(MouseEvent event) {
+            if (event.getSource() instanceof Pane paneHitbox) {
+                Label label = paneHitboxToLabelIndex[Integer.parseInt((String) paneHitbox.getUserData())];
+
+                label.setStyle("-fx-text-fill: " + ((event.getEventType() == MouseEvent.MOUSE_ENTERED) ? "#ffe777" : "#ffffff"));
+            }
+        }
 
         @FXML
-        private Label APITokenLabel; //API token label button on the left column of the screen
+        private void scrollShortcut(MouseEvent event) {
+            if (event.getSource() instanceof Pane hitboxPane) {
+                int hitboxID = Integer.parseInt((String) hitboxPane.getUserData());
 
-        @FXML
+                scrollPaneField.setVvalue(paneHitboxToScrollPercentageIndex[hitboxID]);
+            }
+        }
+
+        /*@FXML
+        private void shortcutTextHighlight(MouseEvent event) {
+            if (event.getSource() instanceof Pane paneHitbox){ //if the node that called shortcutTextHighlight is a pane, assign it to name paneHitbox
+                AnchorPane parent = (AnchorPane) paneHitbox.getParent(); //find paneHitbox's parent and cast it to Anchor Pane type
+
+                if (parent.lookup("#" + paneHitbox.getUserData()) instanceof Label label) { //if the parent has
+                    //will change the color of the text based on weather the mouse is entering or exiting the respective label hitbox
+                    label.setStyle("-fx-text-fill: " + ((event.getEventType() == MouseEvent.MOUSE_ENTERED) ? "ffe777" : "ffffff"));
+                }
+            }
+        }*/
+
+        /*@FXML
         private void introductionShortcut(MouseEvent event) {
             scrollPaneField.setVvalue(0.26);
         }
@@ -79,7 +110,7 @@ public class OrientationController implements Initializable {
         @FXML
         private void APITokenShortcut(MouseEvent event) {
             scrollPaneField.setVvalue(0.93);
-        }
+        }*/
 
     private ProfileConfig profileConfig;
 
@@ -153,5 +184,11 @@ public class OrientationController implements Initializable {
         profileConfig = Launcher.getProfileConfig(); // Load current user profile
         statusLabel.setText("Please enter your Canvas API token.");
         //rememberTokenCheckBox.setSelected(!profileConfig.getToken().isEmpty());
+
+        paneHitboxToLabelIndex = new Label[] {
+                introductionLabel,
+                orientationLabel,
+                APITokenLabel
+        };
     }
 }
