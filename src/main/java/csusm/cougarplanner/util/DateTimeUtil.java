@@ -1,13 +1,17 @@
 package csusm.cougarplanner.util;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Optional;
 
-public class DateTimeUtil
-{
+public class DateTimeUtil {
+
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -168,4 +172,104 @@ public class DateTimeUtil
     {
         return dateTime != null ? dateTime.format(DATE_TIME_FORMATTER) : "";
     }
+
+    /**
+     * Parses an ISO instant or zoned datetime string and converts to LocalDate in system default zone.
+     * Returns empty Optional if input is null, blank, or cannot be parsed.
+     */
+     public static Optional<LocalDate> parseDateFromDateTime(String iso)
+     {
+         if (iso == null || iso.trim().isEmpty())
+         {
+             return Optional.empty();
+         }
+
+         try
+         {
+             String trimmed = iso.trim();
+
+             if (trimmed.endsWith("Z") || trimmed.matches(".*[+-]\\d{2}:?\\d{2}$"))
+             {
+                 ZonedDateTime zdt;
+                 if (trimmed.endsWith("Z"))
+                 {
+                     Instant instant = Instant.parse(trimmed);
+                     zdt = instant.atZone(ZoneId.systemDefault());
+                 }
+                 else
+                 {
+                     zdt = ZonedDateTime.parse(trimmed);
+                 }
+                 return Optional.of(zdt.toLocalDate());
+             }
+
+             // Try parsing as LocalDateTime (e.g., "2023-12-25T10:30:00")
+             LocalDateTime ldt = LocalDateTime.parse(trimmed);
+             return Optional.of(ldt.toLocalDate());
+         }
+         catch (Exception e)
+         {
+             return Optional.empty();
+         }
+     }
+
+     /**
+      * Parses an ISO instant or zoned datetime string and converts to LocalTime in system default zone.
+      * Truncates seconds to return only hours and minutes.
+      * Returns empty Optional if input is null, blank, or cannot be parsed.
+      */
+     public static Optional<LocalTime> parseTimeFromDateTime(String iso)
+     {
+         if (iso == null || iso.trim().isEmpty())
+         {
+             return Optional.empty();
+         }
+
+         try
+         {
+             String trimmed = iso.trim();
+
+             // Try parsing as instant first (e.g., "2023-12-25T10:30:00Z" or "2023-12-25T10:30:00.123Z")
+             if (trimmed.endsWith("Z") || trimmed.matches(".*[+-]\\d{2}:?\\d{2}$"))
+             {
+                 ZonedDateTime zdt;
+                 if (trimmed.endsWith("Z"))
+                 {
+                     Instant instant = Instant.parse(trimmed);
+                     zdt = instant.atZone(ZoneId.systemDefault());
+                 }
+                 else
+                 {
+                     zdt = ZonedDateTime.parse(trimmed);
+                 }
+                 LocalTime time = zdt.toLocalTime();
+                 return Optional.of(time.withSecond(0).withNano(0)); // Truncate to minutes
+             }
+
+             // Try parsing as LocalDateTime (e.g., "2023-12-25T10:30:00")
+             LocalDateTime ldt = LocalDateTime.parse(trimmed);
+             LocalTime time = ldt.toLocalTime();
+             return Optional.of(time.withSecond(0).withNano(0)); // Truncate to minutes
+         }
+         catch (Exception e)
+         {
+             return Optional.empty();
+         }
+     }
+
+     /**
+      * Formats LocalDate as YYYY-MM-DD string.
+      */
+     public static String formatYMD(LocalDate d)
+     {
+         return d != null ? d.format(DATE_FORMATTER) : "";
+     }
+
+     /**
+      * Formats LocalTime as HH:MM string.
+      */
+     public static String formatHM(LocalTime t)
+     {
+         return t != null ? t.format(TIME_FORMATTER) : "";
+     }
 }
