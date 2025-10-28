@@ -57,9 +57,9 @@ public class Announcement
     }
 
     /**
-     * Sets the unique announcement identifier.
+     * Gets the associated course identifier.
      *
-     * @param announcement_id the announcement_id to set
+     * @return the course_id as a string
      */
     public String getCourseId()
     {
