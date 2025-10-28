@@ -8,9 +8,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Writes data to CSV files while maintaining data integrity through atomic operations.
+ */
 public class CsvWriter
 {
 
+    /**
+     * Writes all records to a CSV file with atomic operation.
+     * Uses temporary file and atomic move to prevent data corruption during write.
+     *
+     * @param filePath the path to the CSV file to write
+     * @param records list of maps representing rows, with keys matching headers
+     * @param headers column headers for the CSV file
+     * @throws IOException if the file cannot be written
+     *
+     */
     public void writeAll(Path filePath, List<Map<String, String>> records, String[] headers) throws IOException
     {
         CsvPaths.ensureDataDirectory();
@@ -37,6 +50,15 @@ public class CsvWriter
         Files.move(tempFile, filePath, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
     }
 
+    /**
+     * Appends a single record to an existing CSV file.
+     * Creates the file with headers if it doesn't exist.
+     *
+     * @param filePath the path to the CSV file to append to
+     * @param record the single record to append as a map
+     * @param headers column headers for the CSV file
+     * @throws IOException if the file cannot be written or appended to
+     */
     public void append(Path filePath, Map<String, String> record, String[] headers) throws IOException
     {
         CsvPaths.ensureDataDirectory();
@@ -58,6 +80,13 @@ public class CsvWriter
         Files.write(filePath, (System.lineSeparator() + line).getBytes(), java.nio.file.StandardOpenOption.APPEND);
     }
 
+    /**
+     * Escapes CSV values according to RFC 4180 CSV formatting rules.
+     * Wraps values in quotes if they contain commas, quotes, or newlines.
+     *
+     * @param value the string value to escape for CSV
+     * @return properly escaped CSV value
+     */
     private String escapeCsvValue(String value)
     {
         if (value == null) return "";

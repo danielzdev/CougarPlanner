@@ -11,20 +11,34 @@ import java.util.stream.Collectors;
 import csusm.cougarplanner.util.DateTimeUtil;
 import csusm.cougarplanner.util.WeekUtil;
 
+/**
+ * Repository class for managing Announcement data persistence in announcements.csv.
+ */
 public class AnnouncementsRepository
 {
+    // CSV column headers matching the announcements.csv file specification
     private static final String[] HEADERS = {"announcement_id", "course_id", "title", "posted_at", "body"};
+    // Formatter for parsing and formatting the combined datetime in posted_at field
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     private final CsvReader csvReader;
     private final CsvWriter csvWriter;
 
+    /**
+     * Constructs a new AnnouncementsRepository with default CSV reader/writer.
+     */
     public AnnouncementsRepository()
     {
         this.csvReader = new CsvReader();
         this.csvWriter = new CsvWriter();
     }
 
+    /**
+     * Retrieves all announcements from the announcements.csv file.
+     *
+     * @return List of all Announcement objects in the database
+     * @throws IOException if the CSV file cannot be read
+     */
     public List<Announcement> findAll() throws IOException
     {
         List<Map<String, String>> records = csvReader.readAll(CsvPaths.getAnnouncementsPath());
@@ -33,6 +47,16 @@ public class AnnouncementsRepository
                 .collect(Collectors.toList());
     }
 
+
+    /**
+     * Finds all announcements posted within the specific weeks.
+     * Uses the posted_at datetime field to determine posting time.
+     *
+     * @param weekStart the start date of the week (inclusive)
+     * @param weekEnd the end date of the week (inclusive)
+     * @return List of announcements posted within the specific week
+     * @throws IOException if the CSV file cannot be read
+     */
     public List<Announcement> findByWeek(LocalDate weekStart, LocalDate weekEnd) throws IOException
     {
         return findAll().stream()
@@ -40,6 +64,14 @@ public class AnnouncementsRepository
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Finds all announcements posted on the specific day.
+     * Uses the posted_at datetime field and compares only the date.
+     *
+     * @param day the specific day to filter announcements by
+     * @return List of announcements posted on the specific day
+     * @throws IOException if the CSV file cannot be read
+     */
     public List<Announcement> findByDay(LocalDate day) throws IOException
     {
         return findAll().stream()
@@ -47,6 +79,12 @@ public class AnnouncementsRepository
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Updates an existing announcement or inserts a new one.
+     *
+     * @param announcement the Announcement object to update or insert
+     * @throws IOException if the CSV file cannot be written
+     */
     public void upsert(Announcement announcement) throws IOException
     {
         List<Announcement> allAnnouncements = findAll();
@@ -65,6 +103,12 @@ public class AnnouncementsRepository
         csvWriter.writeAll(CsvPaths.getAnnouncementsPath(), records, HEADERS);
     }
 
+    /**
+     * Upsert operation for multiple announcements.
+     *
+     * @param announcements List of announcements to upsert
+     * @throws IOException if the CSV file cannot be written
+     */
     public void upsertAll(List<Announcement> announcements) throws IOException
     {
         Map<String, Announcement> announcementMap = new HashMap<>();
@@ -89,6 +133,14 @@ public class AnnouncementsRepository
         csvWriter.writeAll(CsvPaths.getAnnouncementsPath(), records, HEADERS);
     }
 
+    /**
+     * Checks if an announcement was posted within specific week range.
+     *
+     * @param announcement the Announcement to check
+     * @param weekStart the start date of the week
+     * @param weekEnd the end date of the week
+     * @return true if the announcement was posted within the week range, false otherwise
+     */
     private boolean isInWeek(Announcement announcement, LocalDate weekStart, LocalDate weekEnd)
     {
         LocalDateTime postedAt = DateTimeUtil.parseDateTime(announcement.getPostedAt());
@@ -97,12 +149,25 @@ public class AnnouncementsRepository
         return WeekUtil.isDateInWeek(postedDate, weekStart, weekEnd);
     }
 
+    /**
+     * Checks if an announcement was posted on the specific day.
+     *
+     * @param announcement the Announcement to check
+     * @param day the specific day to check against
+     * @return true if the announcement was posted on the specific day, false otherwise
+     */
     private boolean isOnDay(Announcement announcement, LocalDate day)
     {
         LocalDateTime postedAt = DateTimeUtil.parseDateTime(announcement.getPostedAt());
         return postedAt != null && postedAt.toLocalDate().equals(day);
     }
 
+    /**
+     * Converts a CSV record Map to an Announcement object.
+     *
+     * @param record Map representing a CSV row with snake_case keys
+     * @return Announcement object populated from the CSV data
+     */
     private Announcement mapToAnnouncement(Map<String, String> record)
     {
         Announcement announcement = new Announcement();
@@ -114,6 +179,12 @@ public class AnnouncementsRepository
         return announcement;
     }
 
+    /**
+     * Converts an Announcement object to a CSV record Map.
+     *
+     * @param announcement the Announcement object to convert
+     * @return Map representing a CSV row with snake_case keys
+     */
     private Map<String, String> announcementToMap(Announcement announcement)
     {
         Map<String, String> record = new HashMap<>();

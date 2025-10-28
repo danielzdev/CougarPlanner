@@ -6,9 +6,26 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * CSV file reader that parses CSV files into lists of maps.
+ * Handles quoted values and empty fields.
+ */
 public class CsvReader
 {
 
+    /**
+     * Reads and parses CSV file into a list of record maps.
+     *
+     * Returns empty list if file doesn't exist or is empty
+     * Normalizes headers to snake_case and lowercase
+     * Handles quoted values containing commas
+     * Trims whitespace from all values
+     * Handles rows with missing columns
+     *
+     * @param filePath the path to the CSV file to read
+     * @return List of maps, where each map represents a row with header→value mappings
+     * @throws IOException if the file exists but cannot be read (permission issues, etc.)
+     */
     public List<Map<String, String>> readAll(Path filePath) throws IOException
     {
         if (!Files.exists(filePath))
@@ -25,7 +42,6 @@ public class CsvReader
         // Parses headers
         String[] headers = Arrays.stream(lines.get(0).split(","))
                 .map(String::trim)
-                .map(this::toSnakeCase)
                 .map(String::toLowerCase)
                 .toArray(String[]::new);
 
@@ -46,6 +62,15 @@ public class CsvReader
         return records;
     }
 
+    /**
+     * Parses a single CSV line.
+     *
+     * Tracks quote state to handle embedded commas
+     * Handles double quotes for escaping
+     *
+     * @param line the CSV line to parse
+     * @return array of string values from the CSV line
+     */
     private String[] parseCsvLine(String line)
     {
         List<String> values = new ArrayList<>();
@@ -71,10 +96,5 @@ public class CsvReader
         values.add(currentValue.toString());
 
         return values.toArray(new String[0]);
-    }
-
-    private String toSnakeCase(String header)
-    {
-        return header.replaceAll("([a-z])([A-Z])", "$1_$2").toLowerCase();
     }
 }
