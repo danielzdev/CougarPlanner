@@ -8,6 +8,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.util.Duration;
 
 import java.io.IOException;
@@ -35,18 +36,6 @@ public class OrientationController implements Initializable {
     @FXML
     private CheckBox mondayCheckBox;
 
-    @FXML
-    private ScrollPane scrollPaneField; //field that controls the scroll feature; Vvalue will be changed
-
-    @FXML
-    private Label introductionLabel; //introduction label button on the left column of the screen
-
-    @FXML
-    private Label orientationLabel; //orientation label button on the left column of the screen
-
-    @FXML
-    private Label APITokenLabel; //API token label button on the left column of the screen
-
     //cosmetic FXML interactives
 
     //if sundayCheckBox is selected, sunday status = true
@@ -65,18 +54,30 @@ public class OrientationController implements Initializable {
     }
 
     @FXML
-    private void introductionShortcut(MouseEvent event) {
-        scrollPaneField.setVvalue(0.26);
+    private ScrollPane scrollPaneField; //field that controls the scroll feature; Vvalue will be changed
+
+    @FXML
+    private Label introductionLabel, orientationLabel, APITokenLabel;
+
+    Label[] paneHitboxToLabelIndex;
+    Double[] paneHitboxToScrollPercentageIndex = {0.26, 0.65, 0.93};
+
+    @FXML
+    private void shortcutTextHighlight(MouseEvent event) {
+        if (event.getSource() instanceof Pane paneHitbox) {
+            Label label = paneHitboxToLabelIndex[Integer.parseInt((String) paneHitbox.getUserData())];
+
+            label.setStyle("-fx-text-fill: " + ((event.getEventType() == MouseEvent.MOUSE_ENTERED) ? "#ffe777" : "#ffffff"));
+        }
     }
 
     @FXML
-    private void orientationShortcut(MouseEvent event) {
-        scrollPaneField.setVvalue(0.65);
-    }
+    private void scrollShortcut(MouseEvent event) {
+        if (event.getSource() instanceof Pane hitboxPane) {
+            int hitboxID = Integer.parseInt((String) hitboxPane.getUserData());
 
-    @FXML
-    private void APITokenShortcut(MouseEvent event) {
-        scrollPaneField.setVvalue(0.93);
+            scrollPaneField.setVvalue(paneHitboxToScrollPercentageIndex[hitboxID]);
+        }
     }
 
     @FXML
@@ -185,5 +186,11 @@ public class OrientationController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         statusLabel.setText("Please enter your Canvas API token.");
+
+        paneHitboxToLabelIndex = new Label[]{
+                introductionLabel,
+                orientationLabel,
+                APITokenLabel
+        };
     }
 }
