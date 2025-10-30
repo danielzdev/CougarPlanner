@@ -36,7 +36,7 @@ public class API {
      * @throws FileNotFoundException if the .profile file cannot be located
      */
     private static String getAuthToken() {
-        try (Scanner sc = new Scanner(new File(".profile"))) {
+        try (Scanner sc = new Scanner(new File("data/profile.properties"))) {
             String line = sc.nextLine();
             int tokenStartIndex = line.indexOf("=") + 2;
             String token = line.substring(tokenStartIndex).trim();
