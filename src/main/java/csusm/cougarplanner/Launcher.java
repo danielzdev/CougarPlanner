@@ -5,7 +5,10 @@ import csusm.cougarplanner.config.ProfileReader;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+
 import java.nio.file.Path;
 
 public class Launcher extends Application {
@@ -35,8 +38,13 @@ public class Launcher extends Application {
         FXMLLoader loader = new FXMLLoader(Launcher.class.getResource(fxmlPath));
         Scene scene = new Scene(loader.load());
         primaryStage.setTitle(title);
+        if (title.equals("Cougar Planner - Weekly View")) { primaryStage.initStyle(StageStyle.TRANSPARENT); scene.setFill(Color.TRANSPARENT); }
         primaryStage.setScene(scene);
         primaryStage.show();
+    }
+
+    public static Stage getPrimaryStage() {
+        return primaryStage;
     }
 
     public static void main(String[] args) {
