@@ -4,6 +4,10 @@ import csusm.cougarplanner.API;
 import csusm.cougarplanner.Launcher;
 import csusm.cougarplanner.config.Profile;
 import csusm.cougarplanner.config.ProfileWriter;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Path;
+import java.util.ResourceBundle;
 import csusm.cougarplanner.services.CanvasService;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
@@ -177,15 +181,11 @@ public class OrientationController implements Initializable {
      */
     private boolean validateToken(String token) {
         try {
-            API api = new API(); // Make sure API reads token from profile
-            CanvasService canvasService = new CanvasService(api);
-            canvasService.fetchCourses();
-            //api.getCoursesJson(); // Try fetching courses
-            return true;
+            API api = new API(token); // Use constructor that accepts token directly
+            return api.validateToken(); // Use the new validation method
         } catch (Exception e) {
             return false;
         }
-        //return !token.isEmpty();
     }
 
     @Override
