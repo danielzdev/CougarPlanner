@@ -1,5 +1,6 @@
-package csusm.cougarplanner;
+package csusm.cougarplanner.controllers;
 
+import csusm.cougarplanner.Launcher;
 import csusm.cougarplanner.config.Profile;
 import csusm.cougarplanner.config.ProfileReader;
 import javafx.application.Platform;
@@ -12,15 +13,13 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.stage.StageStyle;
 
 import java.net.URL;
 import java.nio.file.Path;
 import java.util.ResourceBundle;
 
-public class HelloController implements Initializable {
+public class MainPageController implements Initializable {
 
     ProfileReader reader = new ProfileReader(Path.of("data/profile.properties"));
     Profile profile = reader.readProfile().getProfile();

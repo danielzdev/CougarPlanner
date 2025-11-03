@@ -4,6 +4,7 @@ import csusm.cougarplanner.API;
 import csusm.cougarplanner.Launcher;
 import csusm.cougarplanner.config.Profile;
 import csusm.cougarplanner.config.ProfileWriter;
+import csusm.cougarplanner.services.CanvasService;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -119,7 +120,8 @@ public class OrientationController implements Initializable {
                     // Create new profile for the user
                     Profile profile = new Profile();
                     profile.setAuthToken(token);
-                    profile.setOrientationCompleted(true);
+                    // Temp disabled for debugging
+                    //profile.setOrientationCompleted(true);
                     profile.setWeekStart(sundayStatus ? "sunday" : "monday");
 
                     // Remember token if checkbox selected
@@ -147,7 +149,7 @@ public class OrientationController implements Initializable {
                         PauseTransition pause = new PauseTransition(Duration.seconds(1.5));
                         pause.setOnFinished(ev -> {
                             try {
-                                Launcher.loadScene("hello-view.fxml", "Cougar Planner - Weekly View");
+                                Launcher.loadScene("MainPage.fxml", "Cougar Planner - Weekly View", true);
                             } catch (Exception ex) {
                                 statusLabel.setStyle("-fx-text-fill: #ff3030;");
                                 statusLabel.setText("|    Failed to load Main Page.");
@@ -176,7 +178,9 @@ public class OrientationController implements Initializable {
     private boolean validateToken(String token) {
         try {
             API api = new API(); // Make sure API reads token from profile
-            api.getCourses(); // Try fetching courses
+            CanvasService canvasService = new CanvasService(api);
+            canvasService.fetchCourses();
+            //api.getCoursesJson(); // Try fetching courses
             return true;
         } catch (Exception e) {
             return false;

@@ -28,20 +28,37 @@ public class Launcher extends Application {
 
         // Decide which scene to load based on whether orientation is complete
         if (profileConfig.isOrientationCompleted() && !profileConfig.getAuthToken().isEmpty()) {
-            loadScene("hello-view.fxml", "Cougar Planner - Weekly View");
+            loadScene("MainPage.fxml", "Cougar Planner - Weekly View", true);
         } else {
-            loadScene("Orientation.fxml", "Cougar Planner - Orientation");
+            loadScene("Orientation.fxml", "Cougar Planner - Orientation", false);
         }
     }
 
-    public static void loadScene(String fxmlPath, String title) throws Exception {
+    public static void loadScene(String fxmlPath, String title, boolean transparent) throws Exception {
         FXMLLoader loader = new FXMLLoader(Launcher.class.getResource(fxmlPath));
         Scene scene = new Scene(loader.load());
-        primaryStage.setTitle(title);
-        if (title.equals("Cougar Planner - Weekly View")) { primaryStage.initStyle(StageStyle.TRANSPARENT); scene.setFill(Color.TRANSPARENT); }
-        primaryStage.setScene(scene);
-        primaryStage.show();
+
+        Stage newStage = new Stage();
+
+        if (transparent) {
+            newStage.initStyle(StageStyle.TRANSPARENT);
+            scene.setFill(Color.TRANSPARENT);
+        } else {
+            newStage.initStyle(StageStyle.DECORATED);
+            scene.setFill(Color.WHITE);
+        }
+
+        newStage.setTitle(title);
+        newStage.setScene(scene);
+        newStage.show();
+
+        // Closes the previous scene
+        if (primaryStage != null) {
+            primaryStage.close();
+        }
+        primaryStage = newStage;
     }
+
 
     public static Stage getPrimaryStage() {
         return primaryStage;
