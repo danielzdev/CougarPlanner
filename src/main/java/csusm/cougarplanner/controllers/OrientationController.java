@@ -1,5 +1,6 @@
 package csusm.cougarplanner.controllers;
 
+import csusm.cougarplanner.API;
 import csusm.cougarplanner.Launcher;
 import csusm.cougarplanner.config.Profile;
 import csusm.cougarplanner.config.ProfileWriter;
@@ -173,14 +174,14 @@ public class OrientationController implements Initializable {
      * @return boolean indicating if the token is valid
      */
     private boolean validateToken(String token) {
-        /*try {
+        try {
             API api = new API(); // Make sure API reads token from profile
             api.getCourses(); // Try fetching courses
             return true;
         } catch (Exception e) {
             return false;
-        }*/
-        return !token.isEmpty();
+        }
+        //return !token.isEmpty();
     }
 
     @Override
