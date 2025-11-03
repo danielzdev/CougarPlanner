@@ -1,8 +1,13 @@
 package csusm.cougarplanner.controllers;
 
+import csusm.cougarplanner.API;
 import csusm.cougarplanner.Launcher;
 import csusm.cougarplanner.config.Profile;
 import csusm.cougarplanner.config.ProfileWriter;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Path;
+import java.util.ResourceBundle;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -10,11 +15,6 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.util.Duration;
-
-import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Path;
-import java.util.ResourceBundle;
 
 public class OrientationController implements Initializable {
 
@@ -60,14 +60,16 @@ public class OrientationController implements Initializable {
     private Label introductionLabel, orientationLabel, APITokenLabel;
 
     Label[] paneHitboxToLabelIndex;
-    Double[] paneHitboxToScrollPercentageIndex = {0.26, 0.65, 0.93};
+    Double[] paneHitboxToScrollPercentageIndex = { 0.26, 0.65, 0.93 };
 
     @FXML
     private void shortcutTextHighlight(MouseEvent event) {
         if (event.getSource() instanceof Pane paneHitbox) {
             Label label = paneHitboxToLabelIndex[Integer.parseInt((String) paneHitbox.getUserData())];
 
-            label.setStyle("-fx-text-fill: " + ((event.getEventType() == MouseEvent.MOUSE_ENTERED) ? "#ffe777" : "#ffffff"));
+            label.setStyle(
+                "-fx-text-fill: " + ((event.getEventType() == MouseEvent.MOUSE_ENTERED) ? "#ffe777" : "#ffffff")
+            );
         }
     }
 
@@ -173,24 +175,18 @@ public class OrientationController implements Initializable {
      * @return boolean indicating if the token is valid
      */
     private boolean validateToken(String token) {
-        /*try {
-            API api = new API(); // Make sure API reads token from profile
-            api.getCourses(); // Try fetching courses
-            return true;
+        try {
+            API api = new API(token); // Use constructor that accepts token directly
+            return api.validateToken(); // Use the new validation method
         } catch (Exception e) {
             return false;
-        }*/
-        return !token.isEmpty();
+        }
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         statusLabel.setText("Please enter your Canvas API token.");
 
-        paneHitboxToLabelIndex = new Label[]{
-                introductionLabel,
-                orientationLabel,
-                APITokenLabel
-        };
+        paneHitboxToLabelIndex = new Label[] { introductionLabel, orientationLabel, APITokenLabel };
     }
 }

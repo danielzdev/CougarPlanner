@@ -27,9 +27,18 @@ public class API {
     }
 
     /**
+     * Constructor that accepts a token directly for validation purposes.
+     * This is useful during orientation when the token hasn't been saved to file yet.
+     *
+     * @param token the authentication token to use
+     */
+    public API(String token) {
+        AUTH_TOKEN = token;
+    }
+
+    /**
      * Retrieves the authentication token from the .profile configuration file.
-     * The method expects the token to be stored in the format "Token = value" where
-     * the actual token value follows the equals sign and a space.
+     * The method searches for the "authToken" key in the properties file.
      *
      * @return the authentication token as a String, or null if the file is not found
      *         or an error occurs during reading
@@ -37,11 +46,13 @@ public class API {
      */
     private static String getAuthToken() {
         try (Scanner sc = new Scanner(new File("data/profile.properties"))) {
-            String line = sc.nextLine();
-            int tokenStartIndex = line.indexOf("=") + 2;
-            String token = line.substring(tokenStartIndex).trim();
-
-            return token;
+            while (sc.hasNextLine()) {
+                String line = sc.nextLine().trim();
+                if (line.startsWith("authToken=")) {
+                    return line.substring("authToken=".length()).trim();
+                }
+            }
+            return null; // authToken not found
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             return null;
@@ -145,6 +156,37 @@ public class API {
         }
 
         return null;
+    }
+
+    /**
+     * Validates if the current token is valid by making a lightweight API call.
+     * This method makes a simple request to the user's profile endpoint to verify
+     * the token without fetching large amounts of data.
+     *
+     * @return true if the token is valid and API is accessible, false otherwise
+     */
+    public boolean validateToken() {
+        if (AUTH_TOKEN == null || AUTH_TOKEN.isBlank()) {
+            return false;
+        }
+
+        String url = baseURI + "courses?enrollment_state=active&per_page=1";
+
+        try {
+            HttpRequest req = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .timeout(Duration.ofSeconds(10))
+                .header("Authorization", "Bearer " + AUTH_TOKEN)
+                .header("Accept", "application/json")
+                .GET()
+                .build();
+
+            HttpResponse<String> res = client.send(req, HttpResponse.BodyHandlers.ofString());
+
+            return res.statusCode() / 100 == 2;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /**
