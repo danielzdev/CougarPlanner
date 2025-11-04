@@ -33,7 +33,7 @@
                   <Pane layoutX="204.0" layoutY="23.0" prefHeight="6.0" prefWidth="6.0" style="-fx-background-color: F8BA2BFF; -fx-background-radius: 10;" />
                   <Pane layoutX="212.0" layoutY="23.0" prefHeight="6.0" prefWidth="6.0" style="-fx-background-color: F8BA2BFF; -fx-background-radius: 10;" />
                   <Pane layoutX="221.0" layoutY="23.0" prefHeight="6.0" prefWidth="6.0" style="-fx-background-color: F8BA2BFF; -fx-background-radius: 10;" />
-                  <Pane onMouseClicked="#toggleOrderMenu" prefHeight="30.0" prefWidth="242.0" AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <Pane onMouseClicked="#toggleViewingMenu" prefHeight="30.0" prefWidth="242.0" AnchorPane.bottomAnchor="6.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor></Pane>
@@ -423,7 +423,7 @@
                         </VBox>
                      </children>
                   </AnchorPane>
-                  <Pane fx:id="viewingHitbox" onMouseEntered="#fuzzPlannerBody" onMouseExited="#fuzzPlannerBody" prefHeight="563.0" prefWidth="827.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                  <Pane fx:id="viewingHitbox" onMouseClicked="#toggleViewingMenu" onMouseEntered="#fuzzPlannerBody" onMouseExited="#fuzzPlannerBody" prefHeight="563.0" prefWidth="827.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                </children>
             </AnchorPane>
             <AnchorPane mouseTransparent="true" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: transparent;" HBox.hgrow="ALWAYS">

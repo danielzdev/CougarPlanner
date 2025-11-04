@@ -14,7 +14,10 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 import javafx.util.Duration;
+
+import static csusm.cougarplanner.Launcher.getPrimaryStage;
 
 public class OrientationController implements Initializable {
 
@@ -149,6 +152,7 @@ public class OrientationController implements Initializable {
                         pause.setOnFinished(ev -> {
                             try {
                                 Launcher.loadScene("hello-view.fxml", "Cougar Planner - Weekly View");
+                                Launcher.getPrimaryStage().close();
                             } catch (Exception ex) {
                                 statusLabel.setStyle("-fx-text-fill: #ff3030;");
                                 statusLabel.setText("|    Failed to load Main Page.");
