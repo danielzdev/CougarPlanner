@@ -5,6 +5,8 @@ import java.nio.file.Paths;
 
 /**
  * Centralizes all file system paths for CSV data storage and JSON snapshots.
+ *
+ * Part of T03: Implement CSV layer with centralized file location management.
  */
 public class CsvPaths
 {

@@ -9,7 +9,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Reads and parses the application config from the .profile file.
+ * Reads and parses the application config from the .profile file, trims whitespaces, and fills defaults.
+ *
+ * Part of T01: Build .profile reader that loads exact keys and provides validation errors.
  */
 public class ProfileReader
 {
@@ -45,7 +47,8 @@ public class ProfileReader
             return new ReadResult(new Profile(), validationErrors);
         }
 
-        try {
+        try
+        {
             List<String> lines = Files.readAllLines(profilePath);
 
             for (int i = 0; i < lines.size(); i++)
@@ -73,7 +76,6 @@ public class ProfileReader
             }
 
             return new ReadResult(new Profile(properties), validationErrors);
-
         }
         catch (IOException e)
         {

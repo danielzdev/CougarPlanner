@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 
 /**
  * Repository class for managing Course data persistence in courses.csv.
+ *
+ * Part of T03: Implement CSV layer for courses.csv with upsert by ID functionality.
  */
 public class CoursesRepository
 {

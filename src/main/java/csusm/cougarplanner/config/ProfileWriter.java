@@ -10,6 +10,9 @@ import java.util.Map;
 
 /**
  * Writes application config to the .profile file in key=value format.
+ * Implements atomic writes and maintains fixed key order with authToken always first.
+ *
+ * Part of T02: Build .profile writer that persists keys in fixed order with atomic writes.
  */
 public class ProfileWriter
 {

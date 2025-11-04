@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 /**
  * Repository class for managing Assignment data persistence in assignments.csv.
+ * Implements upsert logic to preserve local difficulty settings during sync.
  */
 public class AssignmentsRepository
 {
