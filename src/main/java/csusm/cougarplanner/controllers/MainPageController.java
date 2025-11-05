@@ -36,7 +36,7 @@ public class MainPageController implements Initializable {
     boolean viewingMenuIsOpen = false;
 
     @FXML
-    private void toggleOrderMenu(MouseEvent event) {
+    private void toggleViewingMenu(MouseEvent event) {
         viewingMenu.setVisible(!viewingMenuIsOpen);
         viewingHitbox.setVisible(!viewingMenuIsOpen);
 
@@ -48,8 +48,14 @@ public class MainPageController implements Initializable {
 
     @FXML
     private void fuzzPlannerBody(MouseEvent event) {
-        plannerBody.setEffect((event.getEventType() == MouseEvent.MOUSE_ENTERED) ? null : new BoxBlur());
-        viewingMenu.setOpacity((event.getEventType() == MouseEvent.MOUSE_ENTERED) ? 0.25 : 1.0);
+        if (viewingMenuIsOpen) {
+            plannerBody.setEffect((event.getEventType() == MouseEvent.MOUSE_ENTERED) ? null : new BoxBlur());
+            viewingMenu.setOpacity((event.getEventType() == MouseEvent.MOUSE_ENTERED) ? 0.25 : 1.0);
+        }
+        else {
+            plannerBody.setEffect(null);
+            viewingMenu.setOpacity(1.0);
+        }
     }
 
     @FXML
@@ -259,13 +265,13 @@ public class MainPageController implements Initializable {
 
     @FXML
     private void updateWindowPosition(MouseEvent event) {
-        Launcher.getPrimaryStage().setX(event.getScreenX() - offsetX);
-        Launcher.getPrimaryStage().setY(event.getScreenY() - offsetY);
+        Launcher.getCurrentStage().setX(event.getScreenX() - offsetX);
+        Launcher.getCurrentStage().setY(event.getScreenY() - offsetY);
     }
 
     @FXML
     private void minimizeWindow(MouseEvent event) {
-        Launcher.getPrimaryStage().setIconified(true);
+        Launcher.getCurrentStage().setIconified(true);
     }
 
     @FXML

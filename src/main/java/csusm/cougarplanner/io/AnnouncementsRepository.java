@@ -13,6 +13,8 @@ import csusm.cougarplanner.util.WeekUtil;
 
 /**
  * Repository class for managing Announcement data persistence in announcements.csv.
+ *
+ * Part of T03: Implement CSV layer for announcements.csv with upsert by ID functionality.
  */
 public class AnnouncementsRepository
 {

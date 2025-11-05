@@ -10,6 +10,8 @@ import java.util.Map;
 
 /**
  * Writes data to CSV files while maintaining data integrity through atomic operations.
+ *
+ * Part of T03: Implement CSV layer with atomic writes and proper CSV formatting.
  */
 public class CsvWriter
 {

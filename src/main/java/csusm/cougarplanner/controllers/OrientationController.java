@@ -124,8 +124,7 @@ public class OrientationController implements Initializable {
                     // Create new profile for the user
                     Profile profile = new Profile();
                     profile.setAuthToken(token);
-                    // Temp disabled for debugging
-                    //profile.setOrientationCompleted(true);
+                    profile.setOrientationCompleted(true);
                     profile.setWeekStart(sundayStatus ? "sunday" : "monday");
 
                     // Remember token if checkbox selected

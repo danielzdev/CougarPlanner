@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 /**
  * CSV file reader that parses CSV files into lists of maps.
  * Handles quoted values and empty fields.
+ *
+ * Part of T03: Implement CSV layer with proper empty field handling and header normalization.
  */
 public class CsvReader
 {
