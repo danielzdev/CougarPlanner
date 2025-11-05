@@ -12,7 +12,7 @@ import java.time.Duration;
 import java.util.Scanner;
 
 public class API {
-
+    // Copy Paste Token - 19556~rezxwQ4UHQ6GGyfW7XVumLWkGwUDthwa3RmvCZXmnRE8GNNTRK24CvCKQzKF7LZV
     private final String AUTH_TOKEN;
     private final String baseURI = "https://csusm.instructure.com/api/v1/";
 
