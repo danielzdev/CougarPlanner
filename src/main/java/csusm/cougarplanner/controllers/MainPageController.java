@@ -265,13 +265,13 @@ public class MainPageController implements Initializable {
 
     @FXML
     private void updateWindowPosition(MouseEvent event) {
-        Launcher.getCurrentStage().setX(event.getScreenX() - offsetX);
-        Launcher.getCurrentStage().setY(event.getScreenY() - offsetY);
+        Launcher.getPrimaryStage().setX(event.getScreenX() - offsetX);
+        Launcher.getPrimaryStage().setY(event.getScreenY() - offsetY);
     }
 
     @FXML
     private void minimizeWindow(MouseEvent event) {
-        Launcher.getCurrentStage().setIconified(true);
+        Launcher.getPrimaryStage().setIconified(true);
     }
 
     @FXML

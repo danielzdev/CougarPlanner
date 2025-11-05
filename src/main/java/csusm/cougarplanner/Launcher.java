@@ -59,7 +59,6 @@ public class Launcher extends Application {
         primaryStage = newStage;
     }
 
-
     public static Stage getPrimaryStage() {
         return primaryStage;
     }
