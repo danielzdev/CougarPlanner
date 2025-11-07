@@ -1,11 +1,15 @@
 package csusm.cougarplanner.controllers;
 
+import csusm.cougarplanner.transitions.ExponentialTransitionScale;
+import csusm.cougarplanner.transitions.ExponentialTransitionTranslation;
 import csusm.cougarplanner.Launcher;
 import csusm.cougarplanner.config.Profile;
 import csusm.cougarplanner.config.ProfileReader;
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.effect.BoxBlur;
 import javafx.scene.input.MouseEvent;
@@ -14,6 +18,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Rectangle;
+import javafx.util.Duration;
 
 import java.net.URL;
 import java.nio.file.Path;
@@ -23,6 +28,13 @@ public class MainPageController implements Initializable {
 
     ProfileReader reader = new ProfileReader(Path.of("data/profile.properties"));
     Profile profile = reader.readProfile().getProfile();
+
+    private Node currentlySelectedObject = null;
+
+    private void selectNewObject(Node node) {
+        if (currentlySelectedObject != null) { currentlySelectedObject.setStyle(null); }
+        currentlySelectedObject = node;
+    }
 
     @FXML
     private AnchorPane viewingMenu;
@@ -44,6 +56,8 @@ public class MainPageController implements Initializable {
 
         plannerBody.setEffect(viewingMenuIsOpen ? new BoxBlur() : null);
         viewingMenu.setOpacity(1.0);
+
+        selectNewObject(viewingHitbox);
     }
 
     @FXML
@@ -66,7 +80,7 @@ public class MainPageController implements Initializable {
     }
 
     @FXML
-    private Label orderMenuLabel;
+    private Label viewingMenuLabel, viewingMenuLabelMutable;
 
     @FXML
     private Rectangle announcementsRectangle, assignmentsRectangle;
@@ -79,11 +93,49 @@ public class MainPageController implements Initializable {
             boolean userClickedAnnouncements = label.getText().equals("Announcements");
 
             if (showAnnouncements != userClickedAnnouncements) {
-                orderMenuLabel.setText(userClickedAnnouncements ? "Announcements" : "Assignments");
+                viewingMenuLabelMutable.setText(userClickedAnnouncements ? "Announcements" : "Assignments");
                 announcementsRectangle.setVisible(userClickedAnnouncements);
                 assignmentsRectangle.setVisible(!userClickedAnnouncements);
 
                 showAnnouncements = userClickedAnnouncements;
+            }
+        }
+    }
+
+    @FXML
+    private Pane viewingButtonDecoration1, viewingButtonDecoration2, viewingButtonDecoration3, viewingButtonDecoration4, viewingButtonDecoration5;
+
+    private Pane[] viewingButtonDecorations;
+    private final Double[] viewingButtonDecorationInitLocations = new Double[5];
+
+    @FXML
+    private void highlightViewingLabelFromPane(MouseEvent event) {
+        if (event.getSource() instanceof Pane pane) {
+            ExponentialTransitionTranslation[] transition = new ExponentialTransitionTranslation[5];
+
+            if (event.getEventType() == MouseEvent.MOUSE_ENTERED) {
+                viewingMenuLabel.setStyle("-fx-text-fill: #ffffff");
+                viewingMenuLabelMutable.setStyle("-fx-text-fill: #ffffff");
+
+                for (int i = 0; i < viewingButtonDecorations.length; i++) {
+                    transition[i] = new ExponentialTransitionTranslation(viewingButtonDecorations[i], viewingButtonDecorationInitLocations[i], viewingButtonDecorationInitLocations[i] + 5 * (i + 1), Duration.millis(500));
+                }
+
+                for (int i = 0; i < viewingButtonDecorations.length; i++) {
+                    transition[i].play();
+                }
+            }
+            else {
+                viewingMenuLabel.setStyle("-fx-text-fill: #D5D5D5");
+                viewingMenuLabelMutable.setStyle("-fx-text-fill: #D5D5D5");
+
+                for (int i = 0; i < viewingButtonDecorations.length; i++) {
+                    transition[i] = new ExponentialTransitionTranslation(viewingButtonDecorations[i], viewingButtonDecorations[i].getTranslateX(), viewingButtonDecorationInitLocations[i], Duration.millis(400));
+                }
+
+                for (int i = 0; i < viewingButtonDecorations.length; i++) {
+                    transition[i].play();
+                }
             }
         }
     }
@@ -105,26 +157,37 @@ public class MainPageController implements Initializable {
             boolean userClickedViewByWeek = label.getText().equals("Week");
 
             if (defaultView != userClickedViewByWeek) {
-                String headerText = headerLabel.getText();
-                String headerText1 = headerText.substring(0,4);
-                String headerText2 = headerText.substring(defaultView ? 8 : 7);
-
-                String textToBeAdded = defaultView ? "day" : "week";
-
-                headerLabel.setText(headerText1 + textToBeAdded + headerText2);
-
-                weekRectangle.setVisible(userClickedViewByWeek);
-                dayRectangle.setVisible(!userClickedViewByWeek);
-
-                weekPlanner.setVisible(userClickedViewByWeek);
-                dayPlanner.setVisible(!userClickedViewByWeek);
-
-                defaultView = userClickedViewByWeek;
-                profile.setDefaultView(defaultView ? "week" : "day");
-
-                organizePlannerByWeekStart(); //the first day of the week isn't changed on the day-week view that's hidden, so it needs to be updated
+                performToggleViewByWeek(userClickedViewByWeek);
             }
         }
+    }
+
+    @FXML
+    private void toggleViewByWeek() {
+        boolean userClickedViewByWeek = !defaultView;
+
+        performToggleViewByWeek(userClickedViewByWeek);
+    }
+
+    private void performToggleViewByWeek(boolean userClickedViewByWeek) {
+        String headerText = headerLabel.getText();
+        String headerText1 = headerText.substring(0,4);
+        String headerText2 = headerText.substring(defaultView ? 8 : 7);
+
+        String textToBeAdded = defaultView ? "day" : "week";
+
+        headerLabel.setText(headerText1 + textToBeAdded + headerText2);
+
+        weekRectangle.setVisible(userClickedViewByWeek);
+        dayRectangle.setVisible(!userClickedViewByWeek);
+
+        weekPlanner.setVisible(userClickedViewByWeek);
+        dayPlanner.setVisible(!userClickedViewByWeek);
+
+        defaultView = userClickedViewByWeek;
+        profile.setDefaultView(defaultView ? "week" : "day");
+
+        organizePlannerByWeekStart(); //the first day of the week isn't changed on the day-week view that's hidden, so it needs to be updated
     }
 
     @FXML
@@ -210,6 +273,46 @@ public class MainPageController implements Initializable {
         }
     }
 
+    @FXML
+    private Pane headerPaneDecoration1, headerPaneDecoration2, headerPaneDecoration3, headerPaneDecoration4, headerPaneDecoration5, headerPaneDecoration6, headerPaneDecoration7;
+
+    private Pane[] headerPaneDecorations;
+
+    @FXML
+    private void weekViewHeaderAnimation(MouseEvent event) {
+        if (event.getSource() instanceof Pane pane) {
+            int index = Integer.parseInt((String) pane.getUserData()) - 1;
+            boolean mouseEntered = event.getEventType() == MouseEvent.MOUSE_ENTERED;
+
+            ExponentialTransitionScale transition;
+            transition = new ExponentialTransitionScale(headerPaneDecorations[index], headerPaneDecorations[index].getScaleX(), (mouseEntered) ? 2 : 0, Duration.millis(200.0));
+            transition.play();
+        }
+    }
+
+    PauseTransition singleClick = new PauseTransition(Duration.millis(100.0));
+
+    @FXML
+    private void selectHeaderFromPane(MouseEvent event) {
+        if (event.getSource() instanceof Pane pane) {
+            singleClick.setOnFinished(e -> {
+                selectNewObject(pane);
+                pane.setStyle("-fx-background-color: #BDBDBD");
+            });
+
+            if (event.getClickCount() == 1) {
+                singleClick.play();
+            }
+
+            if (event.getClickCount() == 2) {
+                singleClick.stop();
+                dayViewed = Integer.parseInt((String) pane.getUserData()) - 1;
+                toggleViewByWeek();
+                changeDayViewed(dayViewed);
+            }
+        }
+    }
+
     private AnchorPane[] listOfDayHeaders;
 
     private String dateViewed;
@@ -218,6 +321,8 @@ public class MainPageController implements Initializable {
 
     @FXML
     private void viewPreviousBlock(MouseEvent event) {
+        selectNewObject(viewingHitbox); //filler object to allow new selection
+
         if (defaultView) { //if viewing week
             return; //currently does nothing
         }
@@ -229,6 +334,8 @@ public class MainPageController implements Initializable {
 
     @FXML
     private void viewNextBlock(MouseEvent event) {
+        selectNewObject(viewingHitbox); //filler object to allow new selection
+
         if (defaultView) { //if viewing week
             return; //currently does nothing
         }
@@ -290,6 +397,28 @@ public class MainPageController implements Initializable {
             fridayDayHeaderPane,
             saturdayDayHeaderPane
         };
+
+        viewingButtonDecorations = new Pane[] {
+            viewingButtonDecoration1,
+            viewingButtonDecoration2,
+            viewingButtonDecoration3,
+            viewingButtonDecoration4,
+            viewingButtonDecoration5
+        };
+
+        headerPaneDecorations = new Pane[] {
+                headerPaneDecoration1,
+                headerPaneDecoration2,
+                headerPaneDecoration3,
+                headerPaneDecoration4,
+                headerPaneDecoration5,
+                headerPaneDecoration6,
+                headerPaneDecoration7
+        };
+
+        for (int i = 0; i < viewingButtonDecorations.length; i++) {
+            viewingButtonDecorationInitLocations[i] = viewingButtonDecorations[i].getTranslateX();
+        }
 
         viewingMenu.setVisible(false);
         viewingHitbox.setVisible(false);
