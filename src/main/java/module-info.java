@@ -8,4 +8,6 @@ module CougarPlanner {
     exports csusm.cougarplanner;
     exports csusm.cougarplanner.controllers;
     opens csusm.cougarplanner.controllers to javafx.fxml;
+    exports csusm.cougarplanner.models;
+    opens csusm.cougarplanner.models to javafx.fxml;
 }

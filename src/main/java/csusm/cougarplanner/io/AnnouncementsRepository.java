@@ -1,6 +1,6 @@
 package csusm.cougarplanner.io;
 
-import csusm.cougarplanner.Announcement;
+import csusm.cougarplanner.models.Announcement;
 
 import java.io.IOException;
 import java.time.LocalDate;

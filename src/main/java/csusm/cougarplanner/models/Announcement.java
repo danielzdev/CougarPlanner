@@ -1,4 +1,4 @@
-package csusm.cougarplanner;
+package csusm.cougarplanner.models;
 
 /**
  * Represents a course announcement with combined datetime posting information.

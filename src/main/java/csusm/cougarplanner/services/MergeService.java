@@ -1,8 +1,8 @@
 package csusm.cougarplanner.services;
 
-import csusm.cougarplanner.Announcement;
-import csusm.cougarplanner.Assignment;
-import csusm.cougarplanner.Course;
+import csusm.cougarplanner.models.Announcement;
+import csusm.cougarplanner.models.Assignment;
+import csusm.cougarplanner.models.Course;
 import csusm.cougarplanner.io.AnnouncementsRepository;
 import csusm.cougarplanner.io.AssignmentsRepository;
 import csusm.cougarplanner.io.CoursesRepository;

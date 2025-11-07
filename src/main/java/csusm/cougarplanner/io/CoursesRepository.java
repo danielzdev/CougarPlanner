@@ -1,6 +1,6 @@
 package csusm.cougarplanner.io;
 
-import csusm.cougarplanner.Course;
+import csusm.cougarplanner.models.Course;
 
 import java.io.IOException;
 import java.util.*;
