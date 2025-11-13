@@ -5,6 +5,8 @@ import csusm.cougarplanner.transitions.ExponentialTransitionTranslation;
 import csusm.cougarplanner.Launcher;
 import csusm.cougarplanner.config.Profile;
 import csusm.cougarplanner.config.ProfileReader;
+import csusm.cougarplanner.util.DateTimeUtil;
+import csusm.cougarplanner.util.WeekUtil;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -22,7 +24,12 @@ import javafx.util.Duration;
 
 import java.net.URL;
 import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.format.TextStyle;
+import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.Locale;
 
 public class MainPageController implements Initializable {
 
@@ -118,7 +125,7 @@ public class MainPageController implements Initializable {
                 viewingMenuLabelMutable.setStyle("-fx-text-fill: #ffffff");
 
                 for (int i = 0; i < viewingButtonDecorations.length; i++) {
-                    transition[i] = new ExponentialTransitionTranslation(viewingButtonDecorations[i], viewingButtonDecorationInitLocations[i], viewingButtonDecorationInitLocations[i] + 5 * (i + 1), Duration.millis(500));
+                    transition[i] = new ExponentialTransitionTranslation(viewingButtonDecorations[i], true, viewingButtonDecorations[i].getTranslateX(), viewingButtonDecorationInitLocations[i] + 5 * (i + 1), Duration.millis(500));
                 }
 
                 for (int i = 0; i < viewingButtonDecorations.length; i++) {
@@ -130,7 +137,7 @@ public class MainPageController implements Initializable {
                 viewingMenuLabelMutable.setStyle("-fx-text-fill: #D5D5D5");
 
                 for (int i = 0; i < viewingButtonDecorations.length; i++) {
-                    transition[i] = new ExponentialTransitionTranslation(viewingButtonDecorations[i], viewingButtonDecorations[i].getTranslateX(), viewingButtonDecorationInitLocations[i], Duration.millis(400));
+                    transition[i] = new ExponentialTransitionTranslation(viewingButtonDecorations[i], true, viewingButtonDecorations[i].getTranslateX(), viewingButtonDecorationInitLocations[i], Duration.millis(400));
                 }
 
                 for (int i = 0; i < viewingButtonDecorations.length; i++) {
@@ -141,7 +148,133 @@ public class MainPageController implements Initializable {
     }
 
     @FXML
-    private Label headerLabel;
+    private Label dateLabel;
+
+    private LocalDate dateMemory; //stores the previous date visited
+    private LocalDate dateDisplayed; //stores the current date viewing
+    private LocalDate weekDisplayed; //stores the first day of the week displayed
+    private final LocalDate currentDate = LocalDate.now();
+
+    private void updateDate(String action, Optional<MouseEvent> day) {
+        MouseEvent mouseEvent = day.orElse(null);
+        String weekStartSetting = (weekStart) ? "sunday" : "monday";
+        dateMemory = dateDisplayed;
+
+        switch (action) {
+            case "today":
+                dateDisplayed = LocalDate.now();
+                weekDisplayed = WeekUtil.getWeekStart(dateDisplayed, weekStartSetting);
+                break;
+            case "previousWeek":
+                /*dateDisplayed = dateDisplayed.minusWeeks(1).minusDays(dateDisplayed.getDayOfWeek().getValue() - 1);
+                weekDisplayed = weekDisplayed.minusWeeks(1);*/
+                LocalDate[] weekNavigationBounds = WeekUtil.getNavigationWeekBounds(weekDisplayed, weekStartSetting, "previous"); //get the beginning of the previous week
+                dateDisplayed = weekNavigationBounds[1]; //choose to display the last day of the previous week
+                weekDisplayed = weekNavigationBounds[0]; //get the first day of the previous week
+                break;
+            case "previousDay":
+                dateDisplayed = dateDisplayed.minusDays(1);
+                /*if (dateDisplayed.isBefore(weekDisplayed)) {
+                    weekDisplayed = weekDisplayed.minusWeeks(1);
+                }*/
+                //if the new date is outside the bounds of the unchanged week
+                if (!WeekUtil.isDateInWeek(dateDisplayed, weekDisplayed, weekStartSetting)) {
+                    weekDisplayed = weekDisplayed.minusWeeks(1);
+                }
+                break;
+            case "nextWeek":
+                /*dateDisplayed = dateDisplayed.plusWeeks(1).minusDays(dateDisplayed.getDayOfWeek().getValue() - 1);
+                weekDisplayed = weekDisplayed.plusWeeks(1);*/
+                dateDisplayed = weekDisplayed = WeekUtil.getNavigationWeekBounds(weekDisplayed, weekStartSetting, "next")[0]; //display the first day of the next week
+                break;
+            case "nextDay":
+                dateDisplayed = dateDisplayed.plusDays(1);
+                /*if (dateDisplayed.isAfter(weekDisplayed.plusWeeks(1))) {
+                    weekDisplayed = weekDisplayed.plusWeeks(1);
+                }*/
+                //if the new date is outside the bounds of the unchanged week
+                if (!WeekUtil.isDateInWeek(dateDisplayed, weekDisplayed, weekStartSetting)) {
+                    weekDisplayed = weekDisplayed.plusWeeks(1);
+                }
+                break;
+            case "changeWeekStart":
+                if (weekStart) { //if the start of the week is changed to sunday
+                    weekDisplayed = weekDisplayed.minusDays(1);
+
+                    //if the date that the user last had selected is now outside the bounds of the changed week
+                    if (!WeekUtil.isDateInWeek(dateDisplayed, weekDisplayed, weekStartSetting)) {
+                        //the date that the user previously had selected was sunday of the given week (on the very right) which was removed from the planner page (which shifted left)
+                        dateDisplayed = dateDisplayed.minusDays(1); //change the date to sunday of that week
+                    } //otherwise don't change the date displayed
+
+                } else { //if the start of the week is changed to monday
+                    weekDisplayed = weekDisplayed.plusDays(1);
+
+                    //if the date that the user last had selected is now outside the bounds of the changed week
+                    if (!WeekUtil.isDateInWeek(dateDisplayed, weekDisplayed, weekStartSetting)) {
+                        //the date that the user previously had selected was sunday  of the given week (on the very left) which was removed from the planner page (which shifted right)
+                        dateDisplayed = dateDisplayed.plusDays(1); //change the date to monday of that week
+                    } //otherwise don't change the date displayed
+                }
+                break;
+            case "clickInput":
+                assert mouseEvent != null;
+
+                if (mouseEvent.getSource() instanceof Pane pane) {
+                    int dayOfWeek = Integer.parseInt((String) pane.getUserData()) - 1;
+
+                    dateDisplayed = weekDisplayed.plusDays(dayOfWeek /*- getCorrectionTerm(dayOfWeek)*/);
+                    //the user can not change the week displayed by clicking on a header, so the week displayed stays the same.
+                }
+
+                break;
+        }
+
+        fillDate();
+    }
+
+    @FXML
+    private Pane displayDateParent;
+
+    private double displayDateParentPaneCenter;
+
+    //formats dateDisplayed into preferred appearance and inserts it into dateLabel
+    private void fillDate() {
+        String[] components = DateTimeUtil.formatDate(dateDisplayed).split("-");
+
+        components[1] = Month.of(Integer.parseInt(components[1])).getDisplayName(TextStyle.SHORT, Locale.ENGLISH); //month string, e.g. Jan, Feb, etc...
+        components[2] = addNumberSuffix(components[2]); //day of month string, e.g. 1st, 2nd, 3rd, etc...
+
+        //sets the text in the date label to the date selected with the format: Mon Nov 10th
+        dateLabel.setText(dateDisplayed.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.ENGLISH) + ", " + components[1] + " " + components[2]);
+
+        dateLabel.widthProperty().addListener((observable, oldValue, newValue) -> {
+            dateLabel.setLayoutX(displayDateParentPaneCenter - (dateLabel.getWidth() / 2) );
+        });
+    }
+
+    //adds the number suffix onto the end of the day. E.g. 1st, 2nd, 3rd, etc...
+    private String addNumberSuffix(String i) {
+        String suffix;
+        int integer = Integer.parseInt(i);
+
+        int lastTwoDigits = integer % 100;
+        int lastDigit = integer % 10;
+
+        if (lastTwoDigits >= 11 && lastTwoDigits <= 13) {
+            suffix = "th";
+        }
+        else {
+            suffix = switch (lastDigit) {
+                case 1 -> "st";
+                case 2 -> "nd";
+                case 3 -> "rd";
+                default -> "th";
+            };
+        }
+
+        return integer + suffix;
+    }
 
     @FXML
     private Rectangle weekRectangle, dayRectangle;
@@ -156,6 +289,9 @@ public class MainPageController implements Initializable {
         if (event.getSource() instanceof Label label) {
             boolean userClickedViewByWeek = label.getText().equals("Week");
 
+            weekDayViewed = dateDisplayed.getDayOfWeek().getValue();
+            weekDayViewed += (weekDayViewed == 7) ? -7 : 0;
+
             if (defaultView != userClickedViewByWeek) {
                 performToggleViewByWeek(userClickedViewByWeek);
             }
@@ -169,14 +305,27 @@ public class MainPageController implements Initializable {
         performToggleViewByWeek(userClickedViewByWeek);
     }
 
+    /**
+     * This program will perform the operations necessary to toggle between the week and
+     *      the day view menus in the assignments tab of the planner.
+     *
+     *      !!! When switching from week view to day view, the part of the program that
+     *      calls this function needs to update the weekDayViewed variable beforehand.
+     *      This function only calls changeDayViewed(weekDayViewed).!!!
+     *
+     *This is because when this function is called from a header double click, this
+     *      function does not have the mouse event needed to identify the day clicked on.
+     * @param userClickedViewByWeek true if the user changed the planner to week view
+     *                              instead of day view.
+     */
     private void performToggleViewByWeek(boolean userClickedViewByWeek) {
-        String headerText = headerLabel.getText();
+        /*String headerText = dateLabel.getText();
         String headerText1 = headerText.substring(0,4);
         String headerText2 = headerText.substring(defaultView ? 8 : 7);
 
         String textToBeAdded = defaultView ? "day" : "week";
 
-        headerLabel.setText(headerText1 + textToBeAdded + headerText2);
+        dateLabel.setText(headerText1 + textToBeAdded + headerText2);*/
 
         weekRectangle.setVisible(userClickedViewByWeek);
         dayRectangle.setVisible(!userClickedViewByWeek);
@@ -188,12 +337,126 @@ public class MainPageController implements Initializable {
         profile.setDefaultView(defaultView ? "week" : "day");
 
         organizePlannerByWeekStart(); //the first day of the week isn't changed on the day-week view that's hidden, so it needs to be updated
+        if (!defaultView) { //the user changed the planner to see the day view
+            changeDayViewed(weekDayViewed);//planner defaults to viewing the first day; change this to the day selected. weekDayViewed is updated before toggleViewByWeek is called
+        }
+    }
+
+    @FXML
+    private HBox hboxWeekContentsContainer;
+
+    @FXML
+    private AnchorPane sundayContentsPane, mondayContentsPane, tuesdayContentsPane, wednesdayContentsPane, thursdayContentsPane, fridayContentsPane, saturdayContentsPane;
+
+    @FXML
+    private AnchorPane sundayDayHeaderPane, mondayDayHeaderPane, tuesdayDayHeaderPane, wednesdayDayHeaderPane, thursdayDayHeaderPane, fridayDayHeaderPane, saturdayDayHeaderPane;
+
+    @FXML
+    private Label weekSundayHeaderLabel, weekMondayHeaderLabel, weekTuesdayHeaderLabel, weekWednesdayHeaderLabel, weekThursdayHeaderLabel, weekFridayHeaderLabel, weekSaturdayHeaderLabel;
+
+    @FXML
+    private Label daySundayHeaderLabel, dayMondayHeaderLabel, dayTuesdayHeaderLabel, dayWednesdayHeaderLabel, dayThursdayHeaderLabel, dayFridayHeaderLabel, daySaturdayHeaderLabel;
+
+    private Label[] weekHeaderLabels;
+    private Label[] dayHeaderLabels;
+
+    //these variables track the first day of the week in the week view and day view (the week beginning isn't updated on the part of the planner that isn't being viewed)
+    private boolean firstDayOfWeekWeekTracker = true; //true - sunday, false - monday
+    private boolean firstDayOfWeekDayTracker = true; //true - sunday, false - monday
+
+    private final String[] weekOrganizedStartingSunday = { "SUNDAY", "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY" };
+    private final String[] weekOrganizedStartingMonday = { "MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY" };
+
+    private void organizePlannerByWeekStart() {
+        if (defaultView) { //if the user is currently seeing planner week view
+            if (weekStart != firstDayOfWeekWeekTracker) {
+                performWeekOrganization(weekHeaderLabels);
+            }
+        } else { //if the user is currently seeing the planner day view
+            if (weekStart != firstDayOfWeekDayTracker) {
+                performWeekOrganization(dayHeaderLabels);
+            }
+        }
+    }
+
+    private void performWeekOrganization(Label[] arrayOfLabels) {
+        if (weekStart) { //change the week beginning to sunday
+            for (int i = 0; i < arrayOfLabels.length; i++) {
+                arrayOfLabels[i].setText(weekOrganizedStartingSunday[i]);
+            }
+
+            if (defaultView) {
+                firstDayOfWeekWeekTracker = true;
+            } else {
+                firstDayOfWeekDayTracker = true;
+            }
+        } else { //change the week beginning to monday
+            for (int i = 0; i < arrayOfLabels.length; i++) {
+                arrayOfLabels[i].setText(weekOrganizedStartingMonday[i]);
+            }
+
+            if (defaultView) {
+                firstDayOfWeekWeekTracker = false;
+            } else {
+                firstDayOfWeekDayTracker = false;
+            }
+        }
+    }
+
+    @FXML
+    private Pane headerPaneDecoration1, headerPaneDecoration2, headerPaneDecoration3, headerPaneDecoration4, headerPaneDecoration5, headerPaneDecoration6, headerPaneDecoration7;
+
+    private Pane[] headerPaneDecorations;
+
+    @FXML
+    private void weekViewHeaderAnimation(MouseEvent event) {
+        if (event.getSource() instanceof Pane pane) {
+            int index = Integer.parseInt((String) pane.getUserData()) - 1; //get the index of the day of the week the user clicked on
+            boolean mouseEntered = event.getEventType() == MouseEvent.MOUSE_ENTERED; //true if the mouse entered the header hitbox, false if it exited
+
+            ExponentialTransitionScale transition;
+            //an exponential transition that scales the size of the header decoration. The details of the transition change based on mouse behavior.
+            transition = new ExponentialTransitionScale(headerPaneDecorations[index], headerPaneDecorations[index].getScaleX(), (mouseEntered) ? 2 : 0, Duration.millis(200.0));
+            transition.play();
+        }
+    }
+
+    //a pause transition that defines the amount of time needed to distinguish between a single click and a double click
+    PauseTransition singleClick = new PauseTransition(Duration.millis(100.0));
+
+    @FXML
+    private void selectHeaderFromPane(MouseEvent event) {
+        //if the event was called from a Pane, assign it to the object titled pane
+        if (event.getSource() instanceof Pane pane) {
+
+            //if the transition is allowed to complete (not stopped by a double click) then it will execute this code:
+            singleClick.setOnFinished(e -> {
+                //establish the event behavior on a single click
+                if (pane != currentlySelectedObject) { //if the user clicked the already selected object, do nothing.
+                    selectNewObject(pane);
+                    pane.setStyle("-fx-background-color: #BDBDBD");
+                    updateDate("clickInput", Optional.of(event)); //update the date based on what was clicked
+                }
+            });
+
+            if (event.getClickCount() == 1) {
+                singleClick.play(); //begin to wait for a second click
+            }
+
+            //user double-clicked and wishes to open up the day selected in the 'day view' menu
+            if (event.getClickCount() == 2) {
+                singleClick.stop();                                                //upon a second click, stop the countdown for a single click
+                weekDayViewed = Integer.parseInt((String) pane.getUserData()) - 1; //get the index for the week day currently displayed
+                weekDayViewed += (weekDayViewed == 7) ? -7 : 0;
+                toggleViewByWeek();                                                //change the planner view
+            }
+        }
     }
 
     @FXML
     private Rectangle sundayRectangle, mondayRectangle;
 
-    boolean weekStart = profile.getWeekStart().equals("sunday"); //true - sunday ; false - monday
+    boolean weekStart = profile.getWeekStart().equalsIgnoreCase("sunday"); //true - sunday ; false - monday
 
     @FXML
     private void toggleWeekStart(MouseEvent event) {
@@ -208,127 +471,35 @@ public class MainPageController implements Initializable {
                 profile.setWeekStart(weekStart ? "sunday" : "monday");
 
                 organizePlannerByWeekStart();
-            }
-        }
-    }
-
-    @FXML
-    private HBox hboxWeekHeaderContainer;
-
-    @FXML
-    private AnchorPane sundayHeaderPane, mondayHeaderPane, tuesdayHeaderPane, wednesdayHeaderPane, thursdayHeaderPane, fridayHeaderPane, saturdayHeaderPane;
-
-    @FXML
-    private HBox hboxWeekContentsContainer;
-
-    @FXML
-    private AnchorPane sundayContentsPane, mondayContentsPane, tuesdayContentsPane, wednesdayContentsPane, thursdayContentsPane, fridayContentsPane, saturdayContentsPane;
-
-    @FXML
-    private HBox hboxDayHeaderContainer;
-
-    @FXML
-    private AnchorPane sundayDayHeaderPane, mondayDayHeaderPane, tuesdayDayHeaderPane, wednesdayDayHeaderPane, thursdayDayHeaderPane, fridayDayHeaderPane, saturdayDayHeaderPane;
-
-
-    private boolean firstDayOfWeekWeekTracker = true; //true - sunday, false - monday
-    private boolean firstDayOfWeekDayTracker = true; //true - sunday, false - monday
-
-    private void organizePlannerByWeekStart() {
-        boolean newWeekStart = profile.getWeekStart().equals("sunday");
-
-        if (defaultView) { //if user is currently seeing planner week view
-            if (newWeekStart == firstDayOfWeekWeekTracker) {
-                return; //return if no change is necessary
-            }
-            if (newWeekStart) { //change the week beginning to sunday
-                hboxWeekHeaderContainer.getChildren().removeAll(mondayHeaderPane, tuesdayHeaderPane, wednesdayHeaderPane, thursdayHeaderPane, fridayHeaderPane, saturdayHeaderPane);
-                hboxWeekHeaderContainer.getChildren().addAll(mondayHeaderPane, tuesdayHeaderPane, wednesdayHeaderPane, thursdayHeaderPane, fridayHeaderPane, saturdayHeaderPane);
-                hboxWeekContentsContainer.getChildren().removeAll(mondayContentsPane, tuesdayContentsPane, wednesdayContentsPane, thursdayContentsPane, fridayContentsPane, saturdayContentsPane);
-                hboxWeekContentsContainer.getChildren().addAll(mondayContentsPane, tuesdayContentsPane, wednesdayContentsPane, thursdayContentsPane, fridayContentsPane, saturdayContentsPane);
-                firstDayOfWeekWeekTracker = true;
-            }
-            else { //change the week beginning to monday
-                hboxWeekHeaderContainer.getChildren().remove(0);
-                hboxWeekHeaderContainer.getChildren().add(sundayHeaderPane);
-                hboxWeekContentsContainer.getChildren().remove(0);
-                hboxWeekContentsContainer.getChildren().add(sundayContentsPane);
-                firstDayOfWeekWeekTracker = false;
-            }
-        }
-        else { //if user is currently seeing planner day view
-            if (newWeekStart == firstDayOfWeekDayTracker) {
-                return; //return if no change is necessary
-            }
-            if (newWeekStart) { //change the week beginning to sunday
-                hboxDayHeaderContainer.getChildren().removeAll(mondayDayHeaderPane, tuesdayDayHeaderPane, wednesdayDayHeaderPane, thursdayDayHeaderPane, fridayDayHeaderPane, saturdayDayHeaderPane);
-                hboxDayHeaderContainer.getChildren().addAll(mondayDayHeaderPane, tuesdayDayHeaderPane, wednesdayDayHeaderPane, thursdayDayHeaderPane, fridayDayHeaderPane, saturdayDayHeaderPane);
-                firstDayOfWeekDayTracker = true;
-            }
-            else { //change the week beginning to monday
-                hboxDayHeaderContainer.getChildren().remove(0);
-                hboxDayHeaderContainer.getChildren().add(sundayDayHeaderPane);
-                firstDayOfWeekDayTracker = false;
-            }
-        }
-    }
-
-    @FXML
-    private Pane headerPaneDecoration1, headerPaneDecoration2, headerPaneDecoration3, headerPaneDecoration4, headerPaneDecoration5, headerPaneDecoration6, headerPaneDecoration7;
-
-    private Pane[] headerPaneDecorations;
-
-    @FXML
-    private void weekViewHeaderAnimation(MouseEvent event) {
-        if (event.getSource() instanceof Pane pane) {
-            int index = Integer.parseInt((String) pane.getUserData()) - 1;
-            boolean mouseEntered = event.getEventType() == MouseEvent.MOUSE_ENTERED;
-
-            ExponentialTransitionScale transition;
-            transition = new ExponentialTransitionScale(headerPaneDecorations[index], headerPaneDecorations[index].getScaleX(), (mouseEntered) ? 2 : 0, Duration.millis(200.0));
-            transition.play();
-        }
-    }
-
-    PauseTransition singleClick = new PauseTransition(Duration.millis(100.0));
-
-    @FXML
-    private void selectHeaderFromPane(MouseEvent event) {
-        if (event.getSource() instanceof Pane pane) {
-            singleClick.setOnFinished(e -> {
-                selectNewObject(pane);
-                pane.setStyle("-fx-background-color: #BDBDBD");
-            });
-
-            if (event.getClickCount() == 1) {
-                singleClick.play();
-            }
-
-            if (event.getClickCount() == 2) {
-                singleClick.stop();
-                dayViewed = Integer.parseInt((String) pane.getUserData()) - 1;
-                toggleViewByWeek();
-                changeDayViewed(dayViewed);
+                updateDate("changeWeekStart", Optional.empty());
+                if (!defaultView) { //if the user is currently seeing the day view
+                    weekDayViewed = dateDisplayed.getDayOfWeek().getValue();
+                    if (weekStart) { //if the user changed the start of the week to be sunday
+                        weekDayViewed += (weekDayViewed == 7) ? -7 : 0;
+                    } else {
+                        weekDayViewed--;
+                    }
+                    changeDayViewed(weekDayViewed);
+                }
             }
         }
     }
 
     private AnchorPane[] listOfDayHeaders;
 
-    private String dateViewed;
-
-    private int dayViewed = 0;
+    private int weekDayViewed = 0; //0 - sunday, 6 - saturday
 
     @FXML
     private void viewPreviousBlock(MouseEvent event) {
         selectNewObject(viewingHitbox); //filler object to allow new selection
 
         if (defaultView) { //if viewing week
-            return; //currently does nothing
+            updateDate("previousWeek", Optional.empty());
         }
         else { //if viewing day
-            dayViewed += (dayViewed == 0) ? 6 : -1;
-            changeDayViewed(dayViewed);
+            weekDayViewed += (weekDayViewed == 0) ? 6 : -1;
+            changeDayViewed(weekDayViewed);
+            updateDate("previousDay", Optional.empty());
         }
     }
 
@@ -337,20 +508,19 @@ public class MainPageController implements Initializable {
         selectNewObject(viewingHitbox); //filler object to allow new selection
 
         if (defaultView) { //if viewing week
-            return; //currently does nothing
+            updateDate("nextWeek", Optional.empty());
         }
         else { //if viewing day
-            dayViewed += (dayViewed == 6) ? -6 : 1;
-            changeDayViewed(dayViewed);
+            weekDayViewed += (weekDayViewed == 6) ? -6 : 1;
+            changeDayViewed(weekDayViewed);
+            updateDate("nextDay", Optional.empty());
         }
     }
 
-    @FXML
     private void changeWeekViewed(String dateViewed) {
         return;
     }
 
-    @FXML
     private void changeDayViewed(int dayViewed) {
         for (AnchorPane listOfDayHeader : listOfDayHeaders) {
             listOfDayHeader.setVisible(false);
@@ -398,6 +568,26 @@ public class MainPageController implements Initializable {
             saturdayDayHeaderPane
         };
 
+        weekHeaderLabels = new Label[] {
+            weekSundayHeaderLabel,
+            weekMondayHeaderLabel,
+            weekTuesdayHeaderLabel,
+            weekWednesdayHeaderLabel,
+            weekThursdayHeaderLabel,
+            weekFridayHeaderLabel,
+            weekSaturdayHeaderLabel
+        };
+
+        dayHeaderLabels = new Label[] {
+            daySundayHeaderLabel,
+            dayMondayHeaderLabel,
+            dayTuesdayHeaderLabel,
+            dayWednesdayHeaderLabel,
+            dayThursdayHeaderLabel,
+            dayFridayHeaderLabel,
+            daySaturdayHeaderLabel
+        };
+
         viewingButtonDecorations = new Pane[] {
             viewingButtonDecoration1,
             viewingButtonDecoration2,
@@ -428,5 +618,11 @@ public class MainPageController implements Initializable {
 
         sundayRectangle.setVisible(weekStart);
         mondayRectangle.setVisible(!weekStart);
+
+        Platform.runLater(() -> {
+            dateMemory = (dateDisplayed == null) ? LocalDate.now() : dateDisplayed;
+            displayDateParentPaneCenter = displayDateParent.getWidth() / 2; //calculate the center point of the displayDateParentPane when the object is rendered
+            updateDate("today", Optional.empty());
+        });
     }
 }

@@ -107,6 +107,21 @@ public class WeekUtil
     }
 
     /**
+     * Checks if a given date falls within a week range.
+     *      This is a specialization of the previous function: only the week start needs to be provided here.
+     * @param date The date to check
+     * @param weekStart The week start date
+     * @param weekStartSetting The week start setting. Weather or not the week starts on sunday or monday
+     * @return true if the date is within the week range (inclusive)
+     */
+    public static boolean isDateInWeek(LocalDate date, LocalDate weekStart, String weekStartSetting) {
+        weekStart = getWeekStart(weekStart, weekStartSetting); //double check that week start is actually the start of a week
+        LocalDate weekEnd = getWeekEnd(weekStart); //get the last day of the week provided
+
+        return (date != null && !date.isBefore(weekStart) && !date.isAfter(weekEnd));
+    }
+
+    /**
      * Gets today's date according to system timezone.
      * @return Current local date
      */
