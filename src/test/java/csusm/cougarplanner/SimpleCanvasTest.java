@@ -13,6 +13,7 @@ import java.util.Scanner;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+// To use these tests, in your terminal run the command: ./mvnw test
 public class SimpleCanvasTest {
 
     private API api;
@@ -43,7 +44,7 @@ public class SimpleCanvasTest {
 
     @Test
     void testFetchCourses() {
-        System.out.println("\n📚 COURSES TEST");
+        System.out.println("\nCOURSES TEST");
         System.out.println("================");
 
         List<Course> courses = canvasService.fetchCourses();
@@ -60,13 +61,11 @@ public class SimpleCanvasTest {
             assertFalse(course.getCourseId().trim().isEmpty(), "Course ID should not be empty");
             assertFalse(course.getCourseName().trim().isEmpty(), "Course name should not be empty");
         }
-
-        System.out.println("✅ SUCCESS\n");
     }
 
     @Test
     void testCurrentWeekAssignments() {
-        System.out.println("📅 CURRENT WEEK ASSIGNMENTS");
+        System.out.println("CURRENT WEEK ASSIGNMENTS");
         System.out.println("===========================");
 
         LocalDate now = LocalDate.now();
@@ -97,13 +96,11 @@ public class SimpleCanvasTest {
                 assertNotNull(assignment.getCourseId(), "Assignment course ID should not be null");
             }
         }
-
-        System.out.println("✅ SUCCESS\n");
     }
 
     @Test
     void testNextWeekAssignments() {
-        System.out.println("📅 NEXT WEEK ASSIGNMENTS");
+        System.out.println("NEXT WEEK ASSIGNMENTS");
         System.out.println("=========================");
 
         LocalDate now = LocalDate.now();
@@ -134,7 +131,5 @@ public class SimpleCanvasTest {
                 assertNotNull(assignment.getCourseId(), "Assignment course ID should not be null");
             }
         }
-
-        System.out.println("✅ SUCCESS\n");
     }
 }
